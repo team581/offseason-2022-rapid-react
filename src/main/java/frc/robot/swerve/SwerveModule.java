@@ -4,12 +4,14 @@
 
 package frc.robot.swerve;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.misc.util.GearingConverter;
 import frc.robot.misc.util.WheelConverter;
 import frc.robot.misc.util.sensors.SensorUnitConverter;
@@ -23,19 +25,39 @@ public class SwerveModule {
   private static final WheelConverter DRIVE_MOTOR_WHEEL_CONVERTER =
       WheelConverter.fromDiameter(0.1524);
 
-  private final TalonFX driveMotor;
+  private final WPI_TalonFX driveMotor;
   private final CANCoder encoder;
-  private final TalonFX steerMotor;
+  private final WPI_TalonFX steerMotor;
   private final PIDController drivePidController = new PIDController(0, 0, 0);
-  private final PIDController steerPidController = new PIDController(0, 0, 0);
+  private final ProfiledPIDController steerPidController =
+      new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(0, 0));
 
-  public SwerveModule(TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
+  public SwerveModule(WPI_TalonFX driveMotor, WPI_TalonFX steerMotor, CANCoder encoder) {
     this.driveMotor = driveMotor;
     this.steerMotor = steerMotor;
     this.encoder = encoder;
   }
 
-  public void setDesiredState(SwerveModuleState state) {}
+  public void setDesiredState(SwerveModuleState state) {
+    final var steerMotorPosition = getSteerMotorPosition();
+    final var driveMotorVelocity = getDriveMotorVelocity();
+
+    state = SwerveModuleState.optimize(state, steerMotorPosition);
+
+    final var steerFeedbackVoltage =
+        steerPidController.calculate(steerMotorPosition.getRadians(), state.angle.getRadians());
+    final var steerFeedforwardVoltage =
+        STEER_MOTOR_FEEDFORWARD.calculate(steerPidController.getSetpoint().velocity);
+    final var steerVoltage = steerFeedbackVoltage + steerFeedforwardVoltage;
+    steerMotor.setVoltage(steerVoltage);
+
+    final var driveFeedbackVoltage =
+        drivePidController.calculate(driveMotorVelocity, state.speedMetersPerSecond);
+    final var driveFeedforwardkVoltage =
+        DRIVE_MOTOR_FEEDFORWARD.calculate(state.speedMetersPerSecond);
+    final var driveVoltage = driveFeedbackVoltage + driveFeedforwardkVoltage;
+    driveMotor.setVoltage(driveVoltage);
+  }
 
   private double getDriveMotorVelocity() {
     final var sensorUnitsPer100msBeforeGearing = driveMotor.getSelectedSensorVelocity();
@@ -48,20 +70,9 @@ public class SwerveModule {
     return metersPerSecond;
   }
 
-  private double getSteerMotorVelocity() {
-    final var sensorUnitsPer100msBeforeGearing = steerMotor.getSelectedSensorVelocity();
-    final var sensorUnitsPer100ms =
-        DRIVE_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(sensorUnitsPer100msBeforeGearing);
-    final var radiansPerSecond =
-        SensorUnitConverter.talonFX.sensorUnitsPer100msToRadiansPerSecond(sensorUnitsPer100ms);
-
-    return radiansPerSecond;
-  }
-
-  private double getSteerMotorPosition() {
+  private Rotation2d getSteerMotorPosition() {
     final var degrees = encoder.getAbsolutePosition();
-    final var radians = Units.degreesToRadians(degrees);
 
-    return radians;
+    return Rotation2d.fromDegrees(degrees);
   }
 }
