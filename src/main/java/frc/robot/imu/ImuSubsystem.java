@@ -5,7 +5,6 @@
 package frc.robot.imu;
 
 import com.ctre.phoenix.sensors.Pigeon2;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -23,6 +22,5 @@ public class ImuSubsystem extends SubsystemBase {
 
   public Rotation2d getRobotHeading() {
     return Rotation2d.fromDegrees(imu.getYaw());
-
   }
 }
