@@ -4,6 +4,7 @@
 
 package frc.robot.swerve;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -19,6 +20,8 @@ public class SwerveSubsystem extends SubsystemBase {
   private static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, REAR_LEFT_LOCATION, REAR_RIGHT_LOCATION);
+  private static final double MAX_VELOCITY = 4.5;
+  private static final double MAX_ANGULAR_VELOCITY = 20;
 
   private final ImuSubsystem imu;
   private final SwerveModule frontLeft;
@@ -51,5 +54,19 @@ public class SwerveSubsystem extends SubsystemBase {
     frontRight.setDesiredState(moduleStates[1]);
     rearLeft.setDesiredState(moduleStates[2]);
     rearRight.setDesiredState(moduleStates[3]);
+  }
+
+  public void driveTeleop(
+      double sidewaysPercentage,
+      double forwardPercentage,
+      double thetaPercentage,
+      boolean fieldRelative) {
+    final var chassisSpeeds =
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            forwardPercentage * MAX_VELOCITY,
+            -sidewaysPercentage * MAX_VELOCITY,
+            thetaPercentage * MAX_ANGULAR_VELOCITY,
+            fieldRelative ? imu.getRobotHeading() : new Rotation2d());
+    setChassisSpeeds(chassisSpeeds);
   }
 }
