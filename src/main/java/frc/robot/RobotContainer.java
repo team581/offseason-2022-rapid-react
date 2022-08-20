@@ -4,11 +4,16 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.example.ExampleSubsystem;
 import frc.robot.example.commands.ExampleCommand;
+import frc.robot.imu.ImuSubsystem;
+import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 
 /**
@@ -20,7 +25,14 @@ import frc.robot.swerve.SwerveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
+  private final SwerveSubsystem swerveSubsystem =
+      new SwerveSubsystem(
+          imuSubsystem,
+          new SwerveModule(new TalonFX(2), new TalonFX(3), new CANCoder(10)),
+          new SwerveModule(new TalonFX(4), new TalonFX(5), new CANCoder(11)),
+          new SwerveModule(new TalonFX(6), new TalonFX(7), new CANCoder(12)),
+          new SwerveModule(new TalonFX(8), new TalonFX(9), new CANCoder(13)));
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
