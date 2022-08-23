@@ -10,6 +10,9 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.controller.ButtonController;
+import frc.robot.controller.DriveController;
+import frc.robot.controller.LogitechF310DirectInputController;
 import frc.robot.example.ExampleSubsystem;
 import frc.robot.example.commands.ExampleCommand;
 import frc.robot.imu.ImuSubsystem;
@@ -24,11 +27,17 @@ import frc.robot.swerve.SwerveSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private final DriveController driverController =
+      new DriveController(new XboxController(Constants.DRIVER_CONTROLLER_PORT));
+  private final ButtonController copilotController =
+      new ButtonController(
+          new LogitechF310DirectInputController(Constants.COPILOT_CONTROLLER_PORT));
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(
           imuSubsystem,
+          driverController,
           new SwerveModule(new TalonFX(2), new TalonFX(3), new CANCoder(10)),
           new SwerveModule(new TalonFX(4), new TalonFX(5), new CANCoder(11)),
           new SwerveModule(new TalonFX(6), new TalonFX(7), new CANCoder(12)),

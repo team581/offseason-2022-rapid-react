@@ -9,7 +9,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.swerve.commands.TeleopDriveCommand;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -32,6 +34,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem(
       ImuSubsystem imu,
+      DriveController controller,
       SwerveModule frontLeft,
       SwerveModule frontRight,
       SwerveModule rearRight,
@@ -41,6 +44,7 @@ public class SwerveSubsystem extends SubsystemBase {
     this.frontRight = frontRight;
     this.rearRight = rearRight;
     this.rearLeft = rearLeft;
+    setDefaultCommand(new TeleopDriveCommand(this, controller));
   }
 
   @Override
