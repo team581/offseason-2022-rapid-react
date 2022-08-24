@@ -16,6 +16,7 @@ import frc.robot.controller.LogitechF310DirectInputController;
 import frc.robot.example.ExampleSubsystem;
 import frc.robot.example.commands.ExampleCommand;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.localization.Localization;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 
@@ -42,6 +43,7 @@ public class RobotContainer {
           new SwerveModule(new TalonFX(4), new TalonFX(5), new CANCoder(11)),
           new SwerveModule(new TalonFX(6), new TalonFX(7), new CANCoder(12)),
           new SwerveModule(new TalonFX(8), new TalonFX(9), new CANCoder(13)));
+  private final Localization localization = new Localization(swerveSubsystem, imuSubsystem);
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 

@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
@@ -19,7 +20,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private static final Translation2d FRONT_RIGHT_LOCATION = new Translation2d(0.381, -0.381);
   private static final Translation2d REAR_LEFT_LOCATION = new Translation2d(-0.381, 0.381);
   private static final Translation2d REAR_RIGHT_LOCATION = new Translation2d(-0.381, -0.381);
-  private static final SwerveDriveKinematics KINEMATICS =
+  public static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, REAR_LEFT_LOCATION, REAR_RIGHT_LOCATION);
   private static final double MAX_VELOCITY = 4.5;
@@ -37,19 +38,34 @@ public class SwerveSubsystem extends SubsystemBase {
       DriveController controller,
       SwerveModule frontLeft,
       SwerveModule frontRight,
-      SwerveModule rearRight,
-      SwerveModule rearLeft) {
+      SwerveModule rearLeft,
+      SwerveModule rearRight) {
     this.imu = imu;
     this.frontLeft = frontLeft;
     this.frontRight = frontRight;
-    this.rearRight = rearRight;
     this.rearLeft = rearLeft;
+    this.rearRight = rearRight;
     setDefaultCommand(new TeleopDriveCommand(this, controller));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public ChassisSpeeds getChassisSpeeds() {
+    final var frontLeftState = frontLeft.getState();
+    final var frontRightState = frontRight.getState();
+    final var rearLeftState = rearLeft.getState();
+    final var rearRightState = rearRight.getState();
+    return KINEMATICS.toChassisSpeeds(
+        frontLeftState, frontRightState, rearLeftState, rearRightState);
+  }
+
+  public SwerveModuleState[] getModuleStates() {
+    return new SwerveModuleState[] {
+      frontLeft.getState(), frontRight.getState(), rearLeft.getState(), rearRight.getState()
+    };
   }
 
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
