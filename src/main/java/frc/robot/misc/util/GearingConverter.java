@@ -8,8 +8,18 @@ package frc.robot.misc.util;
 public class GearingConverter {
   public final double gearingReduction;
 
+  /** Creates a new GearingUtil with the provided gear reduction. */
+  static GearingConverter fromReduction(double gearingReduction) {
+    return new GearingConverter(gearingReduction);
+  }
+
+  /** Creates a new GearingUtil with the provided gear upduction. */
+  static GearingConverter fromUpduction(double gearingUpduction) {
+    return new GearingConverter(1 / gearingUpduction);
+  }
+
   /** Creates a new GearingUtil with the provided gear ratio. */
-  public GearingConverter(double gearingReduction) {
+  private GearingConverter(double gearingReduction) {
     this.gearingReduction = gearingReduction;
   }
 
