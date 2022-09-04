@@ -31,8 +31,11 @@ public class SwerveModule {
   private final TalonFX driveMotor;
   private final CANCoder encoder;
   private final TalonFX steerMotor;
+  private final SwerveModuleConstants constants;
 
-  public SwerveModule(TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
+  public SwerveModule(
+      SwerveModuleConstants constants, TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
+    this.constants = constants;
     this.driveMotor = driveMotor;
     this.steerMotor = steerMotor;
     this.encoder = encoder;
@@ -46,6 +49,8 @@ public class SwerveModule {
     steerMotor.config_kI(0, 0);
     steerMotor.config_kD(0, 0);
     steerMotor.config_kF(0, 0);
+
+    resetSteerMotorPosition();
   }
 
   public void setDesiredState(SwerveModuleState state) {
@@ -97,5 +102,18 @@ public class SwerveModule {
     final var feetPerSecond = feetPerMinute / 60;
 
     return feetPerSecond;
+  }
+
+  private void resetSteerMotorPosition() {
+    final var absolutePosition =
+        Units.radiansToRotations(
+            Rotation2d.fromDegrees(encoder.getAbsolutePosition())
+                .minus(constants.angleOffset)
+                .getRadians());
+    final var absolutePositionBeforeGearing =
+        STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(absolutePosition);
+    final var sensorUnitsBeforeGearing =
+        SensorUnitConverter.talonFX.rotationsToSensorUnits(absolutePositionBeforeGearing);
+    steerMotor.setSelectedSensorPosition(sensorUnitsBeforeGearing);
   }
 }
