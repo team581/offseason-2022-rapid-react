@@ -9,12 +9,12 @@ public class GearingConverter {
   public final double gearingReduction;
 
   /** Creates a new GearingUtil with the provided gear reduction. */
-  static GearingConverter fromReduction(double gearingReduction) {
+  public static GearingConverter fromReduction(double gearingReduction) {
     return new GearingConverter(gearingReduction);
   }
 
   /** Creates a new GearingUtil with the provided gear upduction. */
-  static GearingConverter fromUpduction(double gearingUpduction) {
+  public static GearingConverter fromUpduction(double gearingUpduction) {
     return new GearingConverter(1 / gearingUpduction);
   }
 
