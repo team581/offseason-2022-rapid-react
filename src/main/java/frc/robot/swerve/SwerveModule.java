@@ -26,7 +26,7 @@ public class SwerveModule {
   private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(10);
   private static final CircleConverter DRIVE_MOTOR_WHEEL_CONVERTER =
-      CircleConverter.fromDiameter(0.1524);
+      CircleConverter.fromDiameter(6);
 
   private final TalonFX driveMotor;
   private final CANCoder encoder;
