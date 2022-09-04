@@ -5,8 +5,8 @@
 package frc.robot.misc.util.sensors;
 
 public class SensorUnitConverter {
-  public static final CancoderConverter cancoder = new CancoderConverter();
-  public static final TalonFXConverter talonFX = new TalonFXConverter();
+  public static final CtreUnitConverter cancoder = new CtreUnitConverter(4096);
+  public static final CtreUnitConverter talonFX = new CtreUnitConverter(2048);
 
   private SensorUnitConverter() {}
 }
