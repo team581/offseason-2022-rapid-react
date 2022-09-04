@@ -15,8 +15,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 public class ElevatorSubsystem extends SubsystemBase {
   private TalonFX motor;
-  private static GearingConverter SPROCKET_TO_CHAIN = new GearingConverter(1/Units.inchesToMeters(1.7507));
-  private static GearingConverter GEARING = new GearingConverter(60);
+  private static GearingConverter SPROCKET_TO_CHAIN = GearingConverter.fromUpduction(Units.inchesToMeters(1.7507));
+  private static GearingConverter GEARING = GearingConverter.fromReduction(60);
 
 
 
@@ -49,7 +49,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     // motor.set(ControlMode.)
     final var heightBeforeSprocket = SPROCKET_TO_CHAIN.afterToBeforeGearing(height);
     final var heightBeforeGearing = GEARING.afterToBeforeGearing(heightBeforeSprocket);
-    final var heightBeforeGearingSensorUnits = SensorUnitConverter.talonFX.radiansToSensorUnits(heightBeforeGearing);
+    final var heightBeforeGearingSensorUnits = SensorUnitConverter.talonFX.rotationsToSensorUnits(heightBeforeGearing);
     motor.set(ControlMode.MotionMagic, heightBeforeGearingSensorUnits);
 
 
