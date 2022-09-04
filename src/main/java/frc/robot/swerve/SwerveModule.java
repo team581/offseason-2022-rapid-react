@@ -11,19 +11,22 @@ import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+import frc.robot.misc.util.CircleConverter;
 import frc.robot.misc.util.CtreModuleState;
 import frc.robot.misc.util.GearingConverter;
-import frc.robot.misc.util.WheelConverter;
 import frc.robot.misc.util.sensors.SensorUnitConverter;
 
 public class SwerveModule {
   private static final SimpleMotorFeedforward DRIVE_MOTOR_FEEDFORWARD =
       new SimpleMotorFeedforward(0, 0);
   private static final double DRIVE_MOTOR_MAX_VOLTAGE = 12;
-  private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER = new GearingConverter(10);
-  private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER = new GearingConverter(10);
-  private static final WheelConverter DRIVE_MOTOR_WHEEL_CONVERTER =
-      WheelConverter.fromDiameter(0.1524);
+  private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER =
+      GearingConverter.fromReduction(10);
+  private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER =
+      GearingConverter.fromReduction(10);
+  private static final CircleConverter DRIVE_MOTOR_WHEEL_CONVERTER =
+      CircleConverter.fromDiameter(0.1524);
 
   private final TalonFX driveMotor;
   private final CANCoder encoder;
@@ -50,15 +53,18 @@ public class SwerveModule {
 
     state = CtreModuleState.optimize(state, steerMotorPosition);
 
-    final var radians = (state.angle.getRadians());
-    final var radiansBeforeGearing = STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(radians);
-    final var sensorUnits = SensorUnitConverter.talonFX.radiansToSensorUnits(radiansBeforeGearing);
-    steerMotor.set(ControlMode.Position, sensorUnits);
+    final var rotations = Units.radiansToRotations(state.angle.getRadians());
+    final var rotationsBeforeGearing =
+        STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(rotations);
+    final var sensorUnitsBeforeGearing =
+        SensorUnitConverter.talonFX.rotationsToSensorUnits(rotationsBeforeGearing);
+    steerMotor.set(ControlMode.Position, sensorUnitsBeforeGearing);
 
-    final var metersPerSecond = state.speedMetersPerSecond;
-    final var radiansPerSecond = DRIVE_MOTOR_WHEEL_CONVERTER.distanceToRadians(metersPerSecond);
+    final var feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
+    final var feetPerMinute = feetPerSecond * 60;
+    final var rotationsPerMinute = DRIVE_MOTOR_WHEEL_CONVERTER.distanceToRotations(feetPerMinute);
     final var sensorUnitsPer100ms =
-        SensorUnitConverter.talonFX.radiansPerSecondToSensorUnitsPer100ms(radiansPerSecond);
+        SensorUnitConverter.talonFX.rotationsPerMinuteToSensorUnitsPer100ms(rotationsPerMinute);
     final var sensorUnitsPer100msBeforeGearing =
         DRIVE_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(sensorUnitsPer100ms);
     driveMotor.set(
@@ -85,10 +91,11 @@ public class SwerveModule {
     final var sensorUnitsPer100msBeforeGearing = driveMotor.getSelectedSensorVelocity();
     final var sensorUnitsPer100ms =
         DRIVE_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(sensorUnitsPer100msBeforeGearing);
-    final var radiansPerSecond =
-        SensorUnitConverter.talonFX.sensorUnitsPer100msToRadiansPerSecond(sensorUnitsPer100ms);
-    final var metersPerSecond = DRIVE_MOTOR_WHEEL_CONVERTER.radiansToDistance(radiansPerSecond);
+    final var rotationsPerMinute =
+        SensorUnitConverter.talonFX.sensorUnitsPer100msToRotationsPerMinute(sensorUnitsPer100ms);
+    final var feetPerMinute = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotationsPerMinute);
+    final var feetPerSecond = feetPerMinute / 60;
 
-    return metersPerSecond;
+    return feetPerSecond;
   }
 }
