@@ -6,6 +6,7 @@ package frc.robot.swerve;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -44,11 +45,13 @@ public class SwerveModule {
     driveMotor.config_kI(0, 0);
     driveMotor.config_kD(0, 0);
     driveMotor.config_kF(0, 0);
+    driveMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 15, 15, 0));
 
     steerMotor.config_kP(0, 0);
     steerMotor.config_kI(0, 0);
     steerMotor.config_kD(0, 0);
     steerMotor.config_kF(0, 0);
+    steerMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 15, 15, 0));
 
     resetSteerMotorPosition();
   }
