@@ -5,6 +5,7 @@
 package frc.robot.elevator;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.misc.util.GearingConverter;
 import frc.robot.misc.util.sensors.SensorUnitConverter;
@@ -37,6 +38,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Elevator Height (inch)", getHeight());
   }
 
   public void setPercent(double percent) {
@@ -55,6 +57,14 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   }
 
+  public double getHeight() {
+    double positionSensorUnits = motor.getSelectedSensorPosition();
+    double positionBeforeGearing = SensorUnitConverter.talonFX.sensorUnitsToRotations(positionSensorUnits);
+    double positionBeforeSprocket = GEARING.beforeToAfterGearing(positionBeforeGearing);
+    double elevatorHeight = SPROCKET_TO_CHAIN.beforeToAfterGearing(positionBeforeSprocket);
+    return elevatorHeight;
+  }
+
   public double getCurrent() {
     // Will return the current drawn by the elevator motor
     return motor.getStatorCurrent();
@@ -62,5 +72,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void zeroEncoder() {
     // Set the encoder value to zero
+    motor.setSelectedSensorPosition(0);
   }
 }
