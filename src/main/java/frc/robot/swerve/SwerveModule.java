@@ -79,7 +79,7 @@ public class SwerveModule {
         ControlMode.Velocity,
         sensorUnitsPer100msBeforeGearing,
         DemandType.ArbitraryFeedForward,
-        DRIVE_MOTOR_FEEDFORWARD.kv / DRIVE_MOTOR_MAX_VOLTAGE);
+        DRIVE_MOTOR_FEEDFORWARD.calculate(state.speedMetersPerSecond));
   }
 
   public SwerveModuleState getState() {
@@ -90,9 +90,11 @@ public class SwerveModule {
   }
 
   private Rotation2d getSteerMotorPosition() {
-    final var degrees = encoder.getAbsolutePosition();
-
-    return Rotation2d.fromDegrees(degrees);
+    double sensorUnitsBeforeGearing = steerMotor.getSelectedSensorPosition();
+    double sensorUnits =
+        STEER_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(sensorUnitsBeforeGearing);
+    double rotations = SensorUnitConverter.talonFX.sensorUnitsToRotations(sensorUnits);
+    return new Rotation2d(Units.rotationsToRadians(rotations));
   }
 
   private double getDriveMotorVelocity() {
