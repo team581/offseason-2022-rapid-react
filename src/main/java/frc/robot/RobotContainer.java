@@ -11,9 +11,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.controller.ButtonController;
 import frc.robot.controller.DriveController;
-import frc.robot.controller.LogitechF310DirectInputController;
 import frc.robot.elevator.ElevatorPosition;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.commands.ElevatorGoToPosition;
@@ -35,10 +35,9 @@ import frc.robot.swerve.SwerveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveController driverController =
-      new DriveController(new XboxController(Constants.DRIVER_CONTROLLER_PORT));
+      new DriveController(Constants.DRIVER_CONTROLLER_PORT);
   private final ButtonController copilotController =
-      new ButtonController(
-          new LogitechF310DirectInputController(Constants.COPILOT_CONTROLLER_PORT));
+      new ButtonController(Constants.COPILOT_CONTROLLER_PORT);
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
   private final SwerveSubsystem swerveSubsystem =
@@ -83,15 +82,15 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    copilotController.leftTrigger.whileActiveContinuous(
-        new ElevatorSetPercent(elevatorSubsystem, -0.15));
-    copilotController.rightTrigger.whileActiveContinuous(
-        new ElevatorSetPercent(elevatorSubsystem, 0.15));
-    copilotController.aButton.whenPressed(
-        new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.DEPLOYED));
-    copilotController.bButton.whenPressed(
-        new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.LATCHED));
-    copilotController.xButton.whenPressed(
+    driverController
+        .rightBumper
+        .whenPressed(new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.DEPLOYED))
+        .whenReleased(new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.LATCHED));
+    new Trigger(() -> copilotController.getRightY() > 0.5)
+        .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.15));
+    new Trigger(() -> copilotController.getRightY() < -0.5)
+        .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.15));
+    copilotController.startButton.whenPressed(
         new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.STOWED));
   }
 
