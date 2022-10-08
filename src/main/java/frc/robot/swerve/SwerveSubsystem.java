@@ -81,12 +81,17 @@ public class SwerveSubsystem extends SubsystemBase {
       double forwardPercentage,
       double thetaPercentage,
       boolean fieldRelative) {
-    final var chassisSpeeds =
+
+    Translation2d robotTranslation =
+        new Translation2d(sidewaysPercentage, forwardPercentage).times(MAX_VELOCITY);
+    ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            forwardPercentage * MAX_VELOCITY,
-            -sidewaysPercentage * MAX_VELOCITY,
+            robotTranslation.getX(),
+            robotTranslation.getY(),
             thetaPercentage * MAX_ANGULAR_VELOCITY,
             fieldRelative ? imu.getRobotHeading() : new Rotation2d());
-    setChassisSpeeds(chassisSpeeds);
+    SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);
+    setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates));
   }
 }
