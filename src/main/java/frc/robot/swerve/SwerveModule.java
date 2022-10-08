@@ -19,6 +19,7 @@ import frc.robot.misc.util.GearingConverter;
 import frc.robot.misc.util.sensors.SensorUnitConverter;
 
 public class SwerveModule {
+  private static final double MAX_VELOCITY = 4.5;
   private static final SimpleMotorFeedforward DRIVE_MOTOR_FEEDFORWARD =
       new SimpleMotorFeedforward(0, 0);
   private static final double DRIVE_MOTOR_MAX_VOLTAGE = 12;
@@ -61,7 +62,10 @@ public class SwerveModule {
 
     state = CtreModuleState.optimize(state, steerMotorPosition);
 
-    final var rotations = Units.radiansToRotations(state.angle.getRadians());
+    double rotations =
+        (Math.abs(state.speedMetersPerSecond) <= MAX_VELOCITY * 0.01)
+            ? steerMotorPosition.getRadians()
+            : Units.radiansToRotations(state.angle.getRadians());
     final var rotationsBeforeGearing =
         STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(rotations);
     final var sensorUnitsBeforeGearing =
