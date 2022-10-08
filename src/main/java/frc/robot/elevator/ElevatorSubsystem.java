@@ -4,24 +4,20 @@
 
 package frc.robot.elevator;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.misc.util.GearingConverter;
 import frc.robot.misc.util.sensors.SensorUnitConverter;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
 public class ElevatorSubsystem extends SubsystemBase {
   private TalonFX motor;
-  private static GearingConverter SPROCKET_TO_CHAIN = GearingConverter.fromUpduction(Units.inchesToMeters(1.7507));
+  private static GearingConverter SPROCKET_TO_CHAIN =
+      GearingConverter.fromUpduction(Units.inchesToMeters(1.7507));
   private static GearingConverter GEARING = GearingConverter.fromReduction(60);
-
-
-
-
+  private static double HEIGHT_TOLERANCE = 1;
 
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem(TalonFX motor) {
@@ -46,20 +42,20 @@ public class ElevatorSubsystem extends SubsystemBase {
     motor.set(ControlMode.PercentOutput, percent);
   }
 
-  public void setHeight(double height) {
+  public void setPosition(ElevatorPosition position) {
     // Move the elevator to a certain height based on encoder readings
     // motor.set(ControlMode.)
-    final var heightBeforeSprocket = SPROCKET_TO_CHAIN.afterToBeforeGearing(height);
+    final var heightBeforeSprocket = SPROCKET_TO_CHAIN.afterToBeforeGearing(position.height);
     final var heightBeforeGearing = GEARING.afterToBeforeGearing(heightBeforeSprocket);
-    final var heightBeforeGearingSensorUnits = SensorUnitConverter.talonFX.rotationsToSensorUnits(heightBeforeGearing);
+    final var heightBeforeGearingSensorUnits =
+        SensorUnitConverter.talonFX.rotationsToSensorUnits(heightBeforeGearing);
     motor.set(ControlMode.MotionMagic, heightBeforeGearingSensorUnits);
-
-
   }
 
   public double getHeight() {
     double positionSensorUnits = motor.getSelectedSensorPosition();
-    double positionBeforeGearing = SensorUnitConverter.talonFX.sensorUnitsToRotations(positionSensorUnits);
+    double positionBeforeGearing =
+        SensorUnitConverter.talonFX.sensorUnitsToRotations(positionSensorUnits);
     double positionBeforeSprocket = GEARING.beforeToAfterGearing(positionBeforeGearing);
     double elevatorHeight = SPROCKET_TO_CHAIN.beforeToAfterGearing(positionBeforeSprocket);
     return elevatorHeight;
@@ -73,5 +69,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void zeroEncoder() {
     // Set the encoder value to zero
     motor.setSelectedSensorPosition(0);
+  }
+
+  public boolean atPosition(ElevatorPosition position) {
+    return Math.abs(getHeight() - position.height) < HEIGHT_TOLERANCE;
   }
 }

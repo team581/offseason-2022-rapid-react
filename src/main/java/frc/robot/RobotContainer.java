@@ -14,6 +14,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.controller.ButtonController;
 import frc.robot.controller.DriveController;
 import frc.robot.controller.LogitechF310DirectInputController;
+import frc.robot.elevator.ElevatorPosition;
+import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.elevator.commands.ElevatorGoToPosition;
+import frc.robot.elevator.commands.ElevatorSetPercent;
 import frc.robot.example.ExampleSubsystem;
 import frc.robot.example.commands.ExampleCommand;
 import frc.robot.imu.ImuSubsystem;
@@ -62,6 +66,7 @@ public class RobotContainer {
               new TalonFX(9),
               new CANCoder(13)));
   private final Localization localization = new Localization(swerveSubsystem, imuSubsystem);
+  private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(new TalonFX(14));
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
@@ -77,7 +82,18 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    copilotController.leftTrigger.whileActiveContinuous(
+        new ElevatorSetPercent(elevatorSubsystem, -0.15));
+    copilotController.rightTrigger.whileActiveContinuous(
+        new ElevatorSetPercent(elevatorSubsystem, 0.15));
+    copilotController.aButton.whenPressed(
+        new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.DEPLOYED));
+    copilotController.bButton.whenPressed(
+        new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.LATCHED));
+    copilotController.xButton.whenPressed(
+        new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.STOWED));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
