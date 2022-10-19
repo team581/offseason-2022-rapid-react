@@ -19,6 +19,7 @@ import frc.robot.misc.util.GearingConverter;
 import frc.robot.misc.util.sensors.SensorUnitConverter;
 
 public class SwerveModule {
+  private static final double MAX_VELOCITY = 13.5;
   private static final SimpleMotorFeedforward DRIVE_MOTOR_FEEDFORWARD =
       new SimpleMotorFeedforward(0, 0);
   private static final double DRIVE_MOTOR_MAX_VOLTAGE = 12;
@@ -33,6 +34,7 @@ public class SwerveModule {
   private final CANCoder encoder;
   private final TalonFX steerMotor;
   private final SwerveModuleConstants constants;
+  private Rotation2d previousAngle = new Rotation2d();
 
   public SwerveModule(
       SwerveModuleConstants constants, TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
@@ -61,9 +63,12 @@ public class SwerveModule {
 
     state = CtreModuleState.optimize(state, steerMotorPosition);
 
-    final var rotations = Units.radiansToRotations(state.angle.getRadians());
+    boolean isStopped = Math.abs(state.speedMetersPerSecond) <= MAX_VELOCITY * 0.01;
+    Rotation2d angle = isStopped ? this.previousAngle : state.angle;
+    this.previousAngle = angle;
     final var rotationsBeforeGearing =
-        STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(rotations);
+        STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(
+            Units.radiansToRotations(angle.getRadians()));
     final var sensorUnitsBeforeGearing =
         SensorUnitConverter.talonFX.rotationsToSensorUnits(rotationsBeforeGearing);
     steerMotor.set(ControlMode.Position, sensorUnitsBeforeGearing);
@@ -79,7 +84,7 @@ public class SwerveModule {
         ControlMode.Velocity,
         sensorUnitsPer100msBeforeGearing,
         DemandType.ArbitraryFeedForward,
-        DRIVE_MOTOR_FEEDFORWARD.kv / DRIVE_MOTOR_MAX_VOLTAGE);
+        DRIVE_MOTOR_FEEDFORWARD.calculate(state.speedMetersPerSecond));
   }
 
   public SwerveModuleState getState() {
@@ -90,9 +95,11 @@ public class SwerveModule {
   }
 
   private Rotation2d getSteerMotorPosition() {
-    final var degrees = encoder.getAbsolutePosition();
-
-    return Rotation2d.fromDegrees(degrees);
+    double sensorUnitsBeforeGearing = steerMotor.getSelectedSensorPosition();
+    double sensorUnits =
+        STEER_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(sensorUnitsBeforeGearing);
+    double rotations = SensorUnitConverter.talonFX.sensorUnitsToRotations(sensorUnits);
+    return new Rotation2d(Units.rotationsToRadians(rotations));
   }
 
   private double getDriveMotorVelocity() {
