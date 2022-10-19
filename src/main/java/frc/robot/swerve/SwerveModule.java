@@ -34,6 +34,7 @@ public class SwerveModule {
   private final CANCoder encoder;
   private final TalonFX steerMotor;
   private final SwerveModuleConstants constants;
+  private Rotation2d previousAngle = new Rotation2d();
 
   public SwerveModule(
       SwerveModuleConstants constants, TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
@@ -62,12 +63,12 @@ public class SwerveModule {
 
     state = CtreModuleState.optimize(state, steerMotorPosition);
 
-    double rotations =
-        (Math.abs(state.speedMetersPerSecond) <= MAX_VELOCITY * 0.01)
-            ? steerMotorPosition.getRadians()
-            : Units.radiansToRotations(state.angle.getRadians());
+    boolean isStopped = Math.abs(state.speedMetersPerSecond) <= MAX_VELOCITY * 0.01;
+    Rotation2d angle = isStopped ? this.previousAngle : state.angle;
+    this.previousAngle = angle;
     final var rotationsBeforeGearing =
-        STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(rotations);
+        STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(
+            Units.radiansToRotations(angle.getRadians()));
     final var sensorUnitsBeforeGearing =
         SensorUnitConverter.talonFX.rotationsToSensorUnits(rotationsBeforeGearing);
     steerMotor.set(ControlMode.Position, sensorUnitsBeforeGearing);
