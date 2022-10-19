@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.misc.util.CircleConverter;
 import frc.robot.misc.util.CtreModuleState;
 import frc.robot.misc.util.GearingConverter;
@@ -94,6 +95,18 @@ public class SwerveModule {
     return new SwerveModuleState(driveMotorVelocity, steerMotorPosition);
   }
 
+  public void logValues() {
+    SmartDashboard.putNumber(
+        this.constants.corner.toString() + "/Drive motor velocity (ft/sec)",
+        this.getDriveMotorVelocity());
+    SmartDashboard.putNumber(
+        this.constants.corner.toString() + "/Steer motor position (deg)",
+        this.getSteerMotorPosition().getDegrees());
+    SmartDashboard.putNumber(
+        this.constants.corner.toString() + "/CANcoder position (deg)",
+        this.getCancoderPosition().getDegrees());
+  }
+
   private Rotation2d getSteerMotorPosition() {
     double sensorUnitsBeforeGearing = steerMotor.getSelectedSensorPosition();
     double sensorUnits =
@@ -115,15 +128,15 @@ public class SwerveModule {
   }
 
   private void resetSteerMotorPosition() {
-    final var absolutePosition =
-        Units.radiansToRotations(
-            Rotation2d.fromDegrees(encoder.getAbsolutePosition())
-                .minus(constants.angleOffset)
-                .getRadians());
+    final var absolutePosition = Units.radiansToRotations(this.getCancoderPosition().getRadians());
     final var absolutePositionBeforeGearing =
         STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(absolutePosition);
     final var sensorUnitsBeforeGearing =
         SensorUnitConverter.talonFX.rotationsToSensorUnits(absolutePositionBeforeGearing);
     steerMotor.setSelectedSensorPosition(sensorUnitsBeforeGearing);
+  }
+
+  private Rotation2d getCancoderPosition() {
+    return Rotation2d.fromDegrees(encoder.getAbsolutePosition()).minus(constants.angleOffset);
   }
 }

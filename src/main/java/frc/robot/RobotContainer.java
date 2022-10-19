@@ -18,6 +18,7 @@ import frc.robot.example.ExampleSubsystem;
 import frc.robot.example.commands.ExampleCommand;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.Localization;
+import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveModuleConstants;
 import frc.robot.swerve.SwerveSubsystem;
@@ -42,22 +43,22 @@ public class RobotContainer {
           imuSubsystem,
           driverController,
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d()),
+              new SwerveModuleConstants(new Rotation2d(), SwerveCorner.FRONT_LEFT),
               new TalonFX(2),
               new TalonFX(3),
               new CANCoder(10)),
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d()),
+              new SwerveModuleConstants(new Rotation2d(), SwerveCorner.FRONT_RIGHT),
               new TalonFX(4),
               new TalonFX(5),
               new CANCoder(11)),
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d()),
+              new SwerveModuleConstants(new Rotation2d(), SwerveCorner.BACK_LEFT),
               new TalonFX(6),
               new TalonFX(7),
               new CANCoder(12)),
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d()),
+              new SwerveModuleConstants(new Rotation2d(), SwerveCorner.BACK_RIGHT),
               new TalonFX(8),
               new TalonFX(9),
               new CANCoder(13)));

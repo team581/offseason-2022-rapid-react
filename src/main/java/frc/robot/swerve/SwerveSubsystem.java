@@ -29,8 +29,8 @@ public class SwerveSubsystem extends SubsystemBase {
   private final ImuSubsystem imu;
   private final SwerveModule frontLeft;
   private final SwerveModule frontRight;
-  private final SwerveModule rearRight;
-  private final SwerveModule rearLeft;
+  private final SwerveModule backRight;
+  private final SwerveModule backLeft;
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem(
@@ -38,33 +38,38 @@ public class SwerveSubsystem extends SubsystemBase {
       DriveController controller,
       SwerveModule frontLeft,
       SwerveModule frontRight,
-      SwerveModule rearLeft,
-      SwerveModule rearRight) {
+      SwerveModule backLeft,
+      SwerveModule backRight) {
     this.imu = imu;
     this.frontLeft = frontLeft;
     this.frontRight = frontRight;
-    this.rearLeft = rearLeft;
-    this.rearRight = rearRight;
+    this.backLeft = backLeft;
+    this.backRight = backRight;
     setDefaultCommand(new TeleopDriveCommand(this, controller));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    this.frontLeft.logValues();
+    this.frontRight.logValues();
+    this.backLeft.logValues();
+    this.backRight.logValues();
   }
 
   public ChassisSpeeds getChassisSpeeds() {
     final var frontLeftState = frontLeft.getState();
     final var frontRightState = frontRight.getState();
-    final var rearLeftState = rearLeft.getState();
-    final var rearRightState = rearRight.getState();
+    final var rearLeftState = backLeft.getState();
+    final var rearRightState = backRight.getState();
     return KINEMATICS.toChassisSpeeds(
         frontLeftState, frontRightState, rearLeftState, rearRightState);
   }
 
   public SwerveModuleState[] getModuleStates() {
     return new SwerveModuleState[] {
-      frontLeft.getState(), frontRight.getState(), rearLeft.getState(), rearRight.getState()
+      frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()
     };
   }
 
@@ -72,8 +77,8 @@ public class SwerveSubsystem extends SubsystemBase {
     final var moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     frontLeft.setDesiredState(moduleStates[0]);
     frontRight.setDesiredState(moduleStates[1]);
-    rearLeft.setDesiredState(moduleStates[2]);
-    rearRight.setDesiredState(moduleStates[3]);
+    backLeft.setDesiredState(moduleStates[2]);
+    backRight.setDesiredState(moduleStates[3]);
   }
 
   public void driveTeleop(

@@ -8,8 +8,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class SwerveModuleConstants {
   public final Rotation2d angleOffset;
+  public final SwerveCorner corner;
 
-  public SwerveModuleConstants(Rotation2d angleOffset) {
+  public SwerveModuleConstants(Rotation2d angleOffset, SwerveCorner corner) {
     this.angleOffset = angleOffset;
+    this.corner = corner;
   }
 }
