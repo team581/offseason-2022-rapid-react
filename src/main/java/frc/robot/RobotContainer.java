@@ -31,7 +31,6 @@ import frc.robot.wrist.WristPosition;
 import frc.robot.wrist.WristSubsystem;
 import frc.robot.wrist.commands.WristCommand;
 
-
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -87,7 +86,8 @@ public class RobotContainer {
             .perpetually()
             .withName("PerpectualIntakeCommand"));
 
-    this.swerveSubsystem.setDefaultCommand(new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
+    this.swerveSubsystem.setDefaultCommand(
+        new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -106,10 +106,14 @@ public class RobotContainer {
     driverController.leftBumper.whileActiveContinuous(
         new WristCommand(this.wristSubsystem, WristPosition.OUTTAKING)
             .andThen(new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING)));
-    operatorController.leftTrigger.whileActiveContinuous(new WristCommand(this.wristSubsystem, WristPosition.INTAKING));
-    operatorController.leftBumper.whileActiveContinuous(new WristCommand(this.wristSubsystem, WristPosition.STOWED));
-    operatorController.rightTrigger.whileActiveContinuous(new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING));
-    operatorController.rightBumper.whileActiveContinuous(new IntakeCommand(this.intakeSubsystem, IntakeMode.STOPPED));
+    operatorController.leftTrigger.whileActiveContinuous(
+        new WristCommand(this.wristSubsystem, WristPosition.INTAKING));
+    operatorController.leftBumper.whileActiveContinuous(
+        new WristCommand(this.wristSubsystem, WristPosition.STOWED));
+    operatorController.rightTrigger.whileActiveContinuous(
+        new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING));
+    operatorController.rightBumper.whileActiveContinuous(
+        new IntakeCommand(this.intakeSubsystem, IntakeMode.STOPPED));
   }
 
   /**

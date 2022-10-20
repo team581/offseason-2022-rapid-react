@@ -6,7 +6,6 @@ package frc.robot.intake;
 
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.intake.commands.IntakeCommand;
 
 public class IntakeSubsystem extends SubsystemBase {
   private final CANSparkMax motor;
@@ -15,8 +14,6 @@ public class IntakeSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem(CANSparkMax motor) {
     this.motor = motor;
-
-
   }
 
   @Override

@@ -54,7 +54,7 @@ public class WristSubsystem extends SubsystemBase {
     double error = getAngleError(position);
 
     return Math.abs(error) < WristSubsystem.TOLERANCE_ANGLE;
-    }
+  }
 
   /** Returns difference between given position and actual position */
   private double getAngleError(WristPosition position) {
