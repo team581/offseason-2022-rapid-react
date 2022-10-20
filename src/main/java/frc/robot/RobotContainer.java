@@ -104,8 +104,12 @@ public class RobotContainer {
         new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING)
             .alongWith(new WristCommand(this.wristSubsystem, WristPosition.INTAKING)));
     driverController.leftBumper.whileActiveContinuous(
-        new WristCommand(this.wristSubsystem, WristPosition.OUTAKING)
+        new WristCommand(this.wristSubsystem, WristPosition.OUTTAKING)
             .andThen(new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING)));
+    operatorController.leftTrigger.whileActiveContinuous(new WristCommand(this.wristSubsystem, WristPosition.INTAKING));
+    operatorController.leftBumper.whileActiveContinuous(new WristCommand(this.wristSubsystem, WristPosition.STOWED));
+    operatorController.rightTrigger.whileActiveContinuous(new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING));
+    operatorController.rightBumper.whileActiveContinuous(new IntakeCommand(this.intakeSubsystem, IntakeMode.STOPPED));
   }
 
   /**
