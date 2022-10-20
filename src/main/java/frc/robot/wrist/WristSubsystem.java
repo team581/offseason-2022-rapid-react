@@ -13,12 +13,11 @@ import frc.robot.misc.util.GearingConverter;
 
 public class WristSubsystem extends SubsystemBase {
   private static final double TOLERANCE_ANGLE = 0.01;
-  private static GearingConverter GEARING = GearingConverter.fromReduction(64);
-
+  private static final GearingConverter GEARING = GearingConverter.fromReduction(64);
   private final CANSparkMax motor;
   private final RelativeEncoder encoder;
   private final SparkMaxPIDController pid;
-  private WristPosition goal = WristPosition.DOWN;
+  private WristPosition goal = WristPosition.INTAKING;
 
   /** Creates a new WristSubsystem. */
   public WristSubsystem(CANSparkMax motor) {
@@ -42,7 +41,7 @@ public class WristSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Wrist position", getAngle());
+    SmartDashboard.putNumber("Wrist/Position", getAngle());
     this.pid.setReference(
         WristSubsystem.GEARING.afterToBeforeGearing(goal.angle), CANSparkMax.ControlType.kPosition);
   }
@@ -54,8 +53,8 @@ public class WristSubsystem extends SubsystemBase {
   public boolean atPosition(WristPosition position) {
     double error = getAngleError(position);
 
-    return error < WristSubsystem.TOLERANCE_ANGLE;
-  }
+    return Math.abs(error) < WristSubsystem.TOLERANCE_ANGLE;
+    }
 
   /** Returns difference between given position and actual position */
   private double getAngleError(WristPosition position) {

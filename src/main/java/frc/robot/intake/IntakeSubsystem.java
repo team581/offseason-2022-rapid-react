@@ -16,10 +16,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem(CANSparkMax motor) {
     this.motor = motor;
 
-    this.setDefaultCommand(
-        new IntakeCommand(this, IntakeMode.STOPPED)
-            .perpetually()
-            .withName("PerpectualIntakeCommand"));
+
   }
 
   @Override

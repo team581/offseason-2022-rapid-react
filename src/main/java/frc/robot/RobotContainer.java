@@ -26,9 +26,11 @@ import frc.robot.localization.Localization;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveModuleConstants;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.swerve.commands.TeleopDriveCommand;
 import frc.robot.wrist.WristPosition;
 import frc.robot.wrist.WristSubsystem;
 import frc.robot.wrist.commands.WristCommand;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -40,9 +42,9 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveController driverController =
       new DriveController(new XboxController(Constants.DRIVER_CONTROLLER_PORT));
-  private final ButtonController copilotController =
+  private final ButtonController operatorController =
       new ButtonController(
-          new LogitechF310DirectInputController(Constants.COPILOT_CONTROLLER_PORT));
+          new LogitechF310DirectInputController(Constants.OPERATOR_CONTROLLER_PORT));
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
   private final IntakeSubsystem intakeSubsystem =
@@ -79,6 +81,14 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    this.intakeSubsystem.setDefaultCommand(
+        new IntakeCommand(this.intakeSubsystem, IntakeMode.STOPPED)
+            .perpetually()
+            .withName("PerpectualIntakeCommand"));
+
+    this.swerveSubsystem.setDefaultCommand(new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -92,9 +102,9 @@ public class RobotContainer {
   private void configureButtonBindings() {
     driverController.leftTrigger.whileActiveContinuous(
         new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING)
-            .alongWith(new WristCommand(this.wristSubsystem, WristPosition.DOWN)));
+            .alongWith(new WristCommand(this.wristSubsystem, WristPosition.INTAKING)));
     driverController.leftBumper.whileActiveContinuous(
-        new WristCommand(this.wristSubsystem, WristPosition.DOWN)
+        new WristCommand(this.wristSubsystem, WristPosition.OUTAKING)
             .andThen(new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING)));
   }
 

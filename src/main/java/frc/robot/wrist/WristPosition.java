@@ -6,7 +6,8 @@ package frc.robot.wrist;
 
 public enum WristPosition {
   UP(0.25),
-  DOWN(-0.25);
+  OUTAKING(-0.25),
+  INTAKING(-0.25);
 
   public final double angle;
 
