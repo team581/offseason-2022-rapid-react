@@ -100,20 +100,18 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    //driver controls
     driverController.leftTrigger.whileActiveContinuous(
         new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING)
             .alongWith(new WristCommand(this.wristSubsystem, WristPosition.INTAKING)));
     driverController.leftBumper.whileActiveContinuous(
         new WristCommand(this.wristSubsystem, WristPosition.OUTTAKING)
             .andThen(new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING)));
+    //operator controls
     operatorController.leftTrigger.whileActiveContinuous(
         new WristCommand(this.wristSubsystem, WristPosition.INTAKING));
     operatorController.leftBumper.whileActiveContinuous(
         new WristCommand(this.wristSubsystem, WristPosition.STOWED));
-    operatorController.rightTrigger.whileActiveContinuous(
-        new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING));
-    operatorController.rightBumper.whileActiveContinuous(
-        new IntakeCommand(this.intakeSubsystem, IntakeMode.STOPPED));
   }
 
   /**
