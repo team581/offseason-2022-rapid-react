@@ -7,6 +7,8 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -17,11 +19,18 @@ import frc.robot.controller.LogitechF310DirectInputController;
 import frc.robot.example.ExampleSubsystem;
 import frc.robot.example.commands.ExampleCommand;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.intake.IntakeMode;
+import frc.robot.intake.IntakeSubsystem;
+import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.Localization;
 import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveModuleConstants;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.swerve.commands.TeleopDriveCommand;
+import frc.robot.wrist.WristPosition;
+import frc.robot.wrist.WristSubsystem;
+import frc.robot.wrist.commands.WristCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,11 +42,15 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveController driverController =
       new DriveController(new XboxController(Constants.DRIVER_CONTROLLER_PORT));
-  private final ButtonController copilotController =
+  private final ButtonController operatorController =
       new ButtonController(
-          new LogitechF310DirectInputController(Constants.COPILOT_CONTROLLER_PORT));
+          new LogitechF310DirectInputController(Constants.OPERATOR_CONTROLLER_PORT));
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
+  private final IntakeSubsystem intakeSubsystem =
+      new IntakeSubsystem(new CANSparkMax(15, MotorType.kBrushless));
+  private final WristSubsystem wristSubsystem =
+      new WristSubsystem(new CANSparkMax(16, MotorType.kBrushless));
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(
           imuSubsystem,
@@ -68,6 +81,15 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    this.intakeSubsystem.setDefaultCommand(
+        new IntakeCommand(this.intakeSubsystem, IntakeMode.STOPPED)
+            .perpetually()
+            .withName("PerpectualIntakeCommand"));
+
+    this.swerveSubsystem.setDefaultCommand(
+        new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -78,7 +100,20 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    // driver controls
+    driverController.leftTrigger.whileActiveContinuous(
+        new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING)
+            .alongWith(new WristCommand(this.wristSubsystem, WristPosition.INTAKING)));
+    driverController.leftBumper.whileActiveContinuous(
+        new WristCommand(this.wristSubsystem, WristPosition.OUTTAKING)
+            .andThen(new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING)));
+    // operator controls
+    operatorController.leftTrigger.whileActiveContinuous(
+        new WristCommand(this.wristSubsystem, WristPosition.INTAKING));
+    operatorController.leftBumper.whileActiveContinuous(
+        new WristCommand(this.wristSubsystem, WristPosition.STOWED));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
