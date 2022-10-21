@@ -22,7 +22,7 @@ import frc.robot.misc.util.sensors.SensorUnitConverter;
 public class SwerveModule {
   private static final double MAX_VELOCITY = 13.5;
   private static final SimpleMotorFeedforward DRIVE_MOTOR_FEEDFORWARD =
-      new SimpleMotorFeedforward(0, 0);
+      new SimpleMotorFeedforward(0.17763, 2.17731, 0.5);
   private static final double DRIVE_MOTOR_MAX_VOLTAGE = 12;
   private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(10);
