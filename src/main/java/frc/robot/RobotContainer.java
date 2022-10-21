@@ -43,22 +43,22 @@ public class RobotContainer {
           imuSubsystem,
           driverController,
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d(), SwerveCorner.FRONT_LEFT),
+              new SwerveModuleConstants(Rotation2d.fromDegrees(104.6), SwerveCorner.FRONT_LEFT),
               new TalonFX(2),
               new TalonFX(3),
               new CANCoder(10)),
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d(), SwerveCorner.FRONT_RIGHT),
+              new SwerveModuleConstants(Rotation2d.fromDegrees(78.95), SwerveCorner.FRONT_RIGHT),
               new TalonFX(4),
               new TalonFX(5),
               new CANCoder(11)),
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d(), SwerveCorner.BACK_LEFT),
+              new SwerveModuleConstants(Rotation2d.fromDegrees(-148.0), SwerveCorner.BACK_LEFT),
               new TalonFX(6),
               new TalonFX(7),
               new CANCoder(12)),
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d(), SwerveCorner.BACK_RIGHT),
+              new SwerveModuleConstants(Rotation2d.fromDegrees(-62.53), SwerveCorner.BACK_RIGHT),
               new TalonFX(8),
               new TalonFX(9),
               new CANCoder(13)));
