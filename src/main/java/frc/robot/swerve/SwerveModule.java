@@ -49,12 +49,14 @@ public class SwerveModule {
     driveMotor.config_kD(0, 0);
     driveMotor.config_kF(0, 0);
     driveMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 15, 15, 0));
+    driveMotor.setInverted(this.constants.driveInversion);
 
     steerMotor.config_kP(0, 10);
     steerMotor.config_kI(0, 0);
     steerMotor.config_kD(0, 0.4);
     steerMotor.config_kF(0, 0);
     steerMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 15, 15, 0));
+    steerMotor.setInverted(this.constants.angleInversion);
 
     resetSteerMotorPosition();
   }
