@@ -102,6 +102,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // driver controls
+    this.driverController.startButton.whenPressed(() -> this.imuSubsystem.zero());
     driverController.leftTrigger.whileActiveContinuous(
         new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING)
             .alongWith(new WristCommand(this.wristSubsystem, WristPosition.INTAKING)));

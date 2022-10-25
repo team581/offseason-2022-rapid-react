@@ -6,6 +6,7 @@ package frc.robot.imu;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ImuSubsystem extends SubsystemBase {
@@ -18,9 +19,14 @@ public class ImuSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber( "Gyro sensor", this.getRobotHeading().getDegrees());
   }
 
   public Rotation2d getRobotHeading() {
     return Rotation2d.fromDegrees(imu.getYaw());
+  }
+
+  public void zero() {
+    this.imu.setYaw(0);
   }
 }
