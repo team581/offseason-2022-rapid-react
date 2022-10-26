@@ -27,7 +27,7 @@ public class SwerveModule {
   private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(10);
   private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER =
-      GearingConverter.fromReduction(10);
+      GearingConverter.fromReduction(12.8);
   private static final CircleConverter DRIVE_MOTOR_WHEEL_CONVERTER =
       CircleConverter.fromDiameter(6);
 
