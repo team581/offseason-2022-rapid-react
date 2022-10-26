@@ -43,16 +43,16 @@ public class SwerveModule {
     this.steerMotor = steerMotor;
     this.encoder = encoder;
 
-    driveMotor.config_kP(0, 0.1);
+    driveMotor.config_kP(0, 0);
     driveMotor.config_kI(0, 0);
     driveMotor.config_kD(0, 0);
     driveMotor.config_kF(0, 0);
     driveMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 15, 15, 0));
     driveMotor.setInverted(this.constants.driveInversion);
 
-    steerMotor.config_kP(0, 10);
+    steerMotor.config_kP(0, 0.67);
     steerMotor.config_kI(0, 0);
-    steerMotor.config_kD(0, 0.4);
+    steerMotor.config_kD(0, 0.17);
     steerMotor.config_kF(0, 0);
     steerMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 15, 15, 0));
     steerMotor.setInverted(this.constants.angleInversion);
@@ -117,6 +117,9 @@ public class SwerveModule {
     SmartDashboard.putNumber(
         this.constants.corner.toString() + "/CANcoder position (deg)",
         this.getCancoderPosition().getDegrees());
+    SmartDashboard.putNumber(
+        this.constants.corner.toString() + "/Steer motor commanded angle (deg)",
+        this.previousAngle.getDegrees());
   }
 
   private Rotation2d getSteerMotorPosition() {
