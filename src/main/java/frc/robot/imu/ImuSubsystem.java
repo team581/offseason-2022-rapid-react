@@ -19,7 +19,7 @@ public class ImuSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber( "Gyro sensor", this.getRobotHeading().getDegrees());
+    SmartDashboard.putNumber("Gyro sensor", this.getRobotHeading().getDegrees());
   }
 
   public Rotation2d getRobotHeading() {
