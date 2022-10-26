@@ -20,7 +20,6 @@ import frc.robot.misc.util.GearingConverter;
 import frc.robot.misc.util.sensors.SensorUnitConverter;
 
 public class SwerveModule {
-  private static final double MAX_VELOCITY = 13.5;
   private static final SimpleMotorFeedforward DRIVE_MOTOR_FEEDFORWARD =
       new SimpleMotorFeedforward(0, 0, 0);
   private static final double DRIVE_MOTOR_MAX_VOLTAGE = 12;
@@ -61,12 +60,13 @@ public class SwerveModule {
     resetSteerMotorPosition();
   }
 
-  public void setDesiredState(SwerveModuleState state) {
+  public void setDesiredState(SwerveModuleState state, boolean openLoop) {
     final var steerMotorPosition = getSteerMotorPosition();
 
     state = CtreModuleState.optimize(state, steerMotorPosition);
 
-    boolean isStopped = Math.abs(state.speedMetersPerSecond) <= MAX_VELOCITY * 0.01;
+    // boolean isStopped = Math.abs(state.speedMetersPerSecond) <= MAX_VELOCITY * 0.01;
+    boolean isStopped = false;
     Rotation2d angle = isStopped ? this.previousAngle : state.angle;
     this.previousAngle = angle;
     final var rotationsBeforeGearing =
@@ -83,11 +83,21 @@ public class SwerveModule {
         SensorUnitConverter.talonFX.rotationsPerMinuteToSensorUnitsPer100ms(rotationsPerMinute);
     final var sensorUnitsPer100msBeforeGearing =
         DRIVE_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(sensorUnitsPer100ms);
-    driveMotor.set(
-        ControlMode.Velocity,
-        sensorUnitsPer100msBeforeGearing,
-        DemandType.ArbitraryFeedForward,
-        DRIVE_MOTOR_FEEDFORWARD.calculate(state.speedMetersPerSecond));
+
+    if (openLoop) {
+      driveMotor.set(
+          ControlMode.PercentOutput, state.speedMetersPerSecond / SwerveSubsystem.MAX_VELOCITY);
+
+    } else {
+      driveMotor.set(
+          ControlMode.Velocity,
+          sensorUnitsPer100msBeforeGearing,
+          DemandType.ArbitraryFeedForward,
+          DRIVE_MOTOR_FEEDFORWARD.calculate(state.speedMetersPerSecond));
+    }
+
+    SmartDashboard.putNumber(
+        this.constants.corner.toString() + "/Open loop voltage", state.speedMetersPerSecond);
   }
 
   public SwerveModuleState getState() {

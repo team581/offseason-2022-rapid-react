@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
@@ -23,7 +24,7 @@ public class SwerveSubsystem extends SubsystemBase {
   public static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, REAR_LEFT_LOCATION, REAR_RIGHT_LOCATION);
-  private static final double MAX_VELOCITY = 4.5;
+  public static final double MAX_VELOCITY = 4.5;
   private static final double MAX_ANGULAR_VELOCITY = 20;
 
   private final ImuSubsystem imu;
@@ -73,12 +74,12 @@ public class SwerveSubsystem extends SubsystemBase {
     };
   }
 
-  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds, boolean openLoop) {
     final var moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-    frontLeft.setDesiredState(moduleStates[0]);
-    frontRight.setDesiredState(moduleStates[1]);
-    backLeft.setDesiredState(moduleStates[2]);
-    backRight.setDesiredState(moduleStates[3]);
+    frontLeft.setDesiredState(moduleStates[0], openLoop);
+    frontRight.setDesiredState(moduleStates[1], openLoop);
+    backLeft.setDesiredState(moduleStates[2], openLoop);
+    backRight.setDesiredState(moduleStates[3], openLoop);
   }
 
   public void driveTeleop(
@@ -87,16 +88,20 @@ public class SwerveSubsystem extends SubsystemBase {
       double thetaPercentage,
       boolean fieldRelative) {
 
+    SmartDashboard.putNumber("Sideways percentage", sidewaysPercentage);
+    SmartDashboard.putNumber("Forward percentage", forwardPercentage);
+    SmartDashboard.putNumber("Theta percentage", thetaPercentage);
+
     Translation2d robotTranslation =
-        new Translation2d(sidewaysPercentage, forwardPercentage).times(MAX_VELOCITY);
+        new Translation2d(forwardPercentage, -1 * sidewaysPercentage).times(MAX_VELOCITY);
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
             robotTranslation.getX(),
             robotTranslation.getY(),
-            thetaPercentage * MAX_ANGULAR_VELOCITY,
+            -1 * thetaPercentage * MAX_ANGULAR_VELOCITY,
             fieldRelative ? imu.getRobotHeading() : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);
-    setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates));
+    setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), true);
   }
 }
