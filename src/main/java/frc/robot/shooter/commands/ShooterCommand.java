@@ -12,7 +12,7 @@ public class ShooterCommand extends CommandBase {
   private double goalRPM;
 
   /** Creates a new ShooterCommand. */
-  public ShooterCommand(ShooterSubsystem shooter, double goalRPM ) {
+  public ShooterCommand(ShooterSubsystem shooter, double goalRPM) {
     this.shooter = shooter;
     this.goalRPM = goalRPM;
     addRequirements(shooter);
