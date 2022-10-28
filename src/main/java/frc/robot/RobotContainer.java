@@ -24,6 +24,7 @@ import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.Localization;
 import frc.robot.shooter.ShooterSubsystem;
+import frc.robot.shooter.commands.ShooterCommand;
 import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveModuleConstants;
@@ -88,7 +89,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-
     this.intakeSubsystem.setDefaultCommand(
         new IntakeCommand(this.intakeSubsystem, IntakeMode.STOPPED)
             .perpetually()
@@ -96,6 +96,8 @@ public class RobotContainer {
 
     this.swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
+
+    this.shooterSubsystem.setDefaultCommand(new ShooterCommand(this.shooterSubsystem, 0));
 
     // Configure the button bindings
     configureButtonBindings();
