@@ -29,7 +29,7 @@ import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveModuleConstants;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.commands.TeleopDriveCommand;
-import frc.robot.wrist.WristPosition;
+import frc.robot.wrist.WristSetting;
 import frc.robot.wrist.WristSubsystem;
 import frc.robot.wrist.commands.WristCommand;
 
@@ -112,15 +112,16 @@ public class RobotContainer {
     this.driverController.startButton.whenPressed(() -> this.imuSubsystem.zero());
     driverController.leftTrigger.whileActiveContinuous(
         new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING)
-            .alongWith(new WristCommand(this.wristSubsystem, WristPosition.INTAKING)));
+            .perpetually()
+            .alongWith(new WristCommand(this.wristSubsystem, WristSetting.INTAKING)));
     driverController.leftBumper.whileActiveContinuous(
-        new WristCommand(this.wristSubsystem, WristPosition.OUTTAKING)
-            .andThen(new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING)));
+        new WristCommand(this.wristSubsystem, WristSetting.OUTTAKING)
+            .andThen(new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING).perpetually()));
     // operator controls
     operatorController.leftTrigger.whileActiveContinuous(
-        new WristCommand(this.wristSubsystem, WristPosition.INTAKING));
+        new WristCommand(this.wristSubsystem, WristSetting.INTAKING));
     operatorController.leftBumper.whileActiveContinuous(
-        new WristCommand(this.wristSubsystem, WristPosition.STOWED));
+        new WristCommand(this.wristSubsystem, WristSetting.STOWED));
   }
 
   /**

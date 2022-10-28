@@ -13,11 +13,12 @@ import frc.robot.misc.util.GearingConverter;
 
 public class WristSubsystem extends SubsystemBase {
   private static final double TOLERANCE_ANGLE = 0.01;
+  private static final double HOMED_CURRENT = 10;
   private static final GearingConverter GEARING = GearingConverter.fromReduction(64);
   private final CANSparkMax motor;
   private final RelativeEncoder encoder;
   private final SparkMaxPIDController pid;
-  private WristPosition goal = WristPosition.INTAKING;
+  private WristSetting goal = WristSetting.INTAKING;
 
   /** Creates a new WristSubsystem. */
   public WristSubsystem(CANSparkMax motor) {
@@ -25,12 +26,12 @@ public class WristSubsystem extends SubsystemBase {
     this.pid = motor.getPIDController();
     this.encoder = motor.getEncoder();
 
-    this.pid.setP(0);
+    this.pid.setP(0.4);
     this.pid.setI(0);
     this.pid.setD(0);
     this.pid.setIZone(0);
     this.pid.setFF(0);
-    this.pid.setOutputRange(-0.3, 0.3);
+    this.pid.setOutputRange(-0.75, 1);
   }
 
   public double getAngle() {
@@ -42,25 +43,38 @@ public class WristSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Wrist/Position", getAngle());
-    this.pid.setReference(
-        WristSubsystem.GEARING.afterToBeforeGearing(goal.angle), CANSparkMax.ControlType.kPosition);
+    if (goal == WristSetting.HOME) {
+      motor.setVoltage(goal.voltage);
+    } else {
+      this.pid.setReference(
+          WristSubsystem.GEARING.afterToBeforeGearing(goal.angle),
+          CANSparkMax.ControlType.kPosition);
+    }
   }
 
-  public void setPosition(WristPosition position) {
+  public void setPosition(WristSetting position) {
     this.goal = position;
   }
 
-  public boolean atPosition(WristPosition position) {
+  public boolean atPosition(WristSetting position) {
     double error = getAngleError(position);
 
     return Math.abs(error) < WristSubsystem.TOLERANCE_ANGLE;
   }
 
   /** Returns difference between given position and actual position */
-  private double getAngleError(WristPosition position) {
+  private double getAngleError(WristSetting position) {
     double angleBeforeGearing = this.encoder.getPosition();
     double angle = WristSubsystem.GEARING.beforeToAfterGearing(angleBeforeGearing);
 
     return position.angle - angle;
+  }
+
+  public boolean isHomed() {
+    return this.motor.getOutputCurrent() > HOMED_CURRENT;
+  }
+
+  public void resetEncoder() {
+    this.encoder.setPosition(0);
   }
 }

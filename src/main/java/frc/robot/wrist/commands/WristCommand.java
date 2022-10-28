@@ -5,15 +5,15 @@
 package frc.robot.wrist.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.wrist.WristPosition;
+import frc.robot.wrist.WristSetting;
 import frc.robot.wrist.WristSubsystem;
 
 public class WristCommand extends CommandBase {
-  private final WristPosition position;
+  private final WristSetting position;
   private final WristSubsystem wrist;
 
   /** Creates a new WristCommand. */
-  public WristCommand(WristSubsystem wrist, WristPosition goalPosition) {
+  public WristCommand(WristSubsystem wrist, WristSetting goalPosition) {
     this.wrist = wrist;
     this.position = goalPosition;
     addRequirements(wrist);
