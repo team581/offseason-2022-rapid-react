@@ -28,7 +28,7 @@ public class ShooterSubsystem extends SubsystemBase {
     this.pid.setD(0);
     this.pid.setIZone(0);
     this.pid.setFF(0);
-    this.pid.setOutputRange(-0.5, 0.5);
+    this.pid.setOutputRange(0, 0.5);
   }
 
   public double getRPM() {
