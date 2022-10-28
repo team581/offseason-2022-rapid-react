@@ -23,6 +23,8 @@ public class ShooterSubsystem extends SubsystemBase {
     this.pid = motor.getPIDController();
     this.encoder = motor.getEncoder();
 
+    this.motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+
     this.pid.setP(0);
     this.pid.setI(0);
     this.pid.setD(0);
