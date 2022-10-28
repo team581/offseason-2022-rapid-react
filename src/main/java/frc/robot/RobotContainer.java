@@ -23,6 +23,7 @@ import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.Localization;
+import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveModuleConstants;
@@ -51,6 +52,8 @@ public class RobotContainer {
       new IntakeSubsystem(new CANSparkMax(15, MotorType.kBrushless));
   private final WristSubsystem wristSubsystem =
       new WristSubsystem(new CANSparkMax(16, MotorType.kBrushless));
+  private final ShooterSubsystem shooterSubsystem =
+      new ShooterSubsystem(new CANSparkMax(18, MotorType.kBrushless));
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(
           imuSubsystem,
