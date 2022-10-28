@@ -5,8 +5,8 @@
 package frc.robot.intake;
 
 public enum IntakeMode {
-  INTAKING(0.40),
-  OUTTAKING(-0.40),
+  INTAKING(-0.6),
+  OUTTAKING(0.6),
   STOPPED(0);
 
   public final double percentage;
