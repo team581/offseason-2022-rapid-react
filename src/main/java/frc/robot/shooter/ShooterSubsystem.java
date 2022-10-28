@@ -37,7 +37,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return curr;
   }
 
-  public void setPosition(double rpm) {
+  public void setRPM(double rpm) {
     this.goalRPM = rpm;
   }
 
