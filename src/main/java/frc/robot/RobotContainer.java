@@ -24,7 +24,9 @@ import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.Localization;
+import frc.robot.queuer.QueuerMode;
 import frc.robot.queuer.QueuerSubsystem;
+import frc.robot.queuer.command.QueuerCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.shooter.commands.ShooterCommand;
 import frc.robot.swerve.SwerveCorner;
@@ -96,12 +98,14 @@ public class RobotContainer {
     this.intakeSubsystem.setDefaultCommand(
         new IntakeCommand(this.intakeSubsystem, IntakeMode.STOPPED)
             .perpetually()
-            .withName("PerpectualIntakeCommand"));
+            .withName("PerpetualIntakeCommand"));
 
     this.swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
 
     this.shooterSubsystem.setDefaultCommand(new ShooterCommand(this.shooterSubsystem, 0));
+
+    this.queuerSubsystem.setDefaultCommand(new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED).perpetually().withName("PerpetualQueuerCommand"));
 
     // Configure the button bindings
     configureButtonBindings();
