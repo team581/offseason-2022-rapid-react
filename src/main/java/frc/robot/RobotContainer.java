@@ -10,6 +10,7 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,6 +23,9 @@ import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.Localization;
+import frc.robot.queuer.QueuerMode;
+import frc.robot.queuer.QueuerSubsystem;
+import frc.robot.queuer.command.QueuerCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.shooter.commands.ShooterCommand;
 import frc.robot.swerve.SwerveCorner;
@@ -52,6 +56,8 @@ public class RobotContainer {
       new IntakeSubsystem(new CANSparkMax(15, MotorType.kBrushless));
   private final WristSubsystem wristSubsystem =
       new WristSubsystem(new CANSparkMax(16, MotorType.kBrushless));
+  private final QueuerSubsystem queuerSubsystem =
+      new QueuerSubsystem(new CANSparkMax(17, MotorType.kBrushless), new DigitalInput(0));
   private final ShooterSubsystem shooterSubsystem =
       new ShooterSubsystem(new CANSparkMax(18, MotorType.kBrushless));
   private final SwerveSubsystem swerveSubsystem =
@@ -91,12 +97,14 @@ public class RobotContainer {
     this.intakeSubsystem.setDefaultCommand(
         new IntakeCommand(this.intakeSubsystem, IntakeMode.STOPPED)
             .perpetually()
-            .withName("PerpectualIntakeCommand"));
+            .withName("PerpetualIntakeCommand"));
 
     this.swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
 
     this.shooterSubsystem.setDefaultCommand(new ShooterCommand(this.shooterSubsystem, 0).perpetually());
+
+    this.queuerSubsystem.setDefaultCommand(new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED).perpetually().withName("PerpetualQueuerCommand"));
 
     // Configure the button bindings
     configureButtonBindings();
