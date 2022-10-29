@@ -13,12 +13,12 @@ import frc.robot.misc.util.GearingConverter;
 
 public class WristSubsystem extends SubsystemBase {
   private static final double TOLERANCE_ANGLE = 0.01;
-  private static final double HOMED_CURRENT = 10;
+  private static final double HOMED_CURRENT = 15;
   private static final GearingConverter GEARING = GearingConverter.fromReduction(64);
   private final CANSparkMax motor;
   private final RelativeEncoder encoder;
   private final SparkMaxPIDController pid;
-  private WristSetting goal = WristSetting.INTAKING;
+  private WristSetting goal = WristSetting.DONOTHING;
 
   /** Creates a new WristSubsystem. */
   public WristSubsystem(CANSparkMax motor) {
@@ -43,9 +43,17 @@ public class WristSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Wrist/Position", getAngle());
-    if (goal == WristSetting.HOME) {
-      motor.setVoltage(goal.voltage);
+    SmartDashboard.putNumber("Wrist/Amps", this.motor.getOutputCurrent());
+    SmartDashboard.putNumber("Wrist/OutputVoltage", this.motor.getAppliedOutput());
+    SmartDashboard.putNumber("Wrist/CommandedVoltage", goal.voltage);
+    SmartDashboard.putNumber("Wrist/CommandedPosition", goal.angle);
+    if (goal == WristSetting.HOME || goal == WristSetting.DONOTHING) {
+      SmartDashboard.putString("Wrist/State", "Voltage");
+      this.pid.setReference(
+          goal.voltage,
+          CANSparkMax.ControlType.kVoltage);
     } else {
+      SmartDashboard.putString("Wrist/State", "Position");
       this.pid.setReference(
           WristSubsystem.GEARING.afterToBeforeGearing(goal.angle),
           CANSparkMax.ControlType.kPosition);
