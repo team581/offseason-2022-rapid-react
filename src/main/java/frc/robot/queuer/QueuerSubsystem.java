@@ -6,6 +6,7 @@ package frc.robot.queuer;
 
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class QueuerSubsystem extends SubsystemBase {
@@ -26,6 +27,8 @@ public class QueuerSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     this.motor.set(this.mode.percentage);
+
+    SmartDashboard.putBoolean("Queuer", hasBall());
   }
 
   public void setMode(QueuerMode mode) {
