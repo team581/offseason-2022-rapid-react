@@ -32,6 +32,7 @@ import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.commands.TeleopDriveCommand;
 import frc.robot.wrist.WristSetting;
 import frc.robot.wrist.WristSubsystem;
+import frc.robot.wrist.commands.HomeWristCommand;
 import frc.robot.wrist.commands.WristCommand;
 
 /**
@@ -46,7 +47,7 @@ public class RobotContainer {
       new DriveController(new XboxController(Constants.DRIVER_CONTROLLER_PORT));
   private final ButtonController operatorController =
       new ButtonController(
-          new LogitechF310DirectInputController(Constants.OPERATOR_CONTROLLER_PORT));
+          new XboxController(Constants.OPERATOR_CONTROLLER_PORT));
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
   private final IntakeSubsystem intakeSubsystem =
@@ -120,6 +121,7 @@ public class RobotContainer {
         new WristCommand(this.wristSubsystem, WristSetting.OUTTAKING)
             .andThen(new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING).perpetually()));
     // operator controls
+    operatorController.backButton.whenPressed(new HomeWristCommand(this.wristSubsystem));
     operatorController.leftTrigger.whileActiveContinuous(
         new WristCommand(this.wristSubsystem, WristSetting.INTAKING));
     operatorController.leftBumper.whileActiveContinuous(
