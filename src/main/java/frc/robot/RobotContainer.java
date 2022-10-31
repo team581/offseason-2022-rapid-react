@@ -96,7 +96,8 @@ public class RobotContainer {
     this.swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
 
-    this.shooterSubsystem.setDefaultCommand(new ShooterCommand(this.shooterSubsystem, 0).perpetually());
+    this.shooterSubsystem.setDefaultCommand(
+        new ShooterCommand(this.shooterSubsystem, 0).perpetually());
 
     // Configure the button bindings
     configureButtonBindings();
@@ -124,8 +125,10 @@ public class RobotContainer {
         new WristCommand(this.wristSubsystem, WristSetting.INTAKING));
     operatorController.leftBumper.whileActiveContinuous(
         new WristCommand(this.wristSubsystem, WristSetting.STOWED));
-    operatorController.rightTrigger.whileActiveContinuous(new ShooterCommand(this.shooterSubsystem, 2000).perpetually());
-    operatorController.rightBumper.whileActiveContinuous(new ShooterCommand(this.shooterSubsystem, 0));
+    operatorController.rightTrigger.whileActiveContinuous(
+        new ShooterCommand(this.shooterSubsystem, 2000).perpetually());
+    operatorController.rightBumper.whileActiveContinuous(
+        new ShooterCommand(this.shooterSubsystem, 0));
   }
 
   /**

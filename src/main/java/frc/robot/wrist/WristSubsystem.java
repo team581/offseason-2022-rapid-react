@@ -49,9 +49,7 @@ public class WristSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist/CommandedPosition", goal.angle);
     if (goal == WristSetting.HOME || goal == WristSetting.DONOTHING) {
       SmartDashboard.putString("Wrist/State", "Voltage");
-      this.pid.setReference(
-          goal.voltage,
-          CANSparkMax.ControlType.kVoltage);
+      this.pid.setReference(goal.voltage, CANSparkMax.ControlType.kVoltage);
     } else {
       SmartDashboard.putString("Wrist/State", "Position");
       this.pid.setReference(
