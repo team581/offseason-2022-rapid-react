@@ -105,7 +105,10 @@ public class RobotContainer {
     this.shooterSubsystem.setDefaultCommand(
         new ShooterCommand(this.shooterSubsystem, 0).perpetually());
 
-    this.queuerSubsystem.setDefaultCommand(new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED).perpetually().withName("PerpetualQueuerCommand"));
+    this.queuerSubsystem.setDefaultCommand(
+        new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED)
+            .perpetually()
+            .withName("PerpetualQueuerCommand"));
 
     // Configure the button bindings
     configureButtonBindings();
