@@ -16,6 +16,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkMaxPIDController pid;
   private final RelativeEncoder encoder;
   private double goalRPM = 0;
+  private double voltageCompensationReference = 10;
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem(CANSparkMax motor) {
@@ -24,13 +25,14 @@ public class ShooterSubsystem extends SubsystemBase {
     this.encoder = motor.getEncoder();
 
     this.motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    this.motor.enableVoltageCompensation(voltageCompensationReference);
 
-    this.pid.setP(0);
+    this.pid.setP(0.0005);
     this.pid.setI(0);
-    this.pid.setD(0);
+    this.pid.setD(1);
     this.pid.setIZone(0);
-    this.pid.setFF(0);
-    this.pid.setOutputRange(0, 0.5);
+    this.pid.setFF(0.00023);
+    this.pid.setOutputRange(0, 1);
   }
 
   public double getRPM() {

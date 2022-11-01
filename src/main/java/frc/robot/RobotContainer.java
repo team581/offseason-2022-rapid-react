@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.controller.ButtonController;
 import frc.robot.controller.DriveController;
-import frc.robot.controller.LogitechF310DirectInputController;
 import frc.robot.example.ExampleSubsystem;
 import frc.robot.example.commands.ExampleCommand;
 import frc.robot.imu.ImuSubsystem;
@@ -36,6 +35,7 @@ import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.commands.TeleopDriveCommand;
 import frc.robot.wrist.WristSetting;
 import frc.robot.wrist.WristSubsystem;
+import frc.robot.wrist.commands.HomeWristCommand;
 import frc.robot.wrist.commands.WristCommand;
 
 /**
@@ -49,8 +49,7 @@ public class RobotContainer {
   private final DriveController driverController =
       new DriveController(new XboxController(Constants.DRIVER_CONTROLLER_PORT));
   private final ButtonController operatorController =
-      new ButtonController(
-          new LogitechF310DirectInputController(Constants.OPERATOR_CONTROLLER_PORT));
+      new ButtonController(new XboxController(Constants.OPERATOR_CONTROLLER_PORT));
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
   private final IntakeSubsystem intakeSubsystem =
@@ -103,7 +102,13 @@ public class RobotContainer {
     this.swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
 
-    this.shooterSubsystem.setDefaultCommand(new ShooterCommand(this.shooterSubsystem, 0));
+    this.shooterSubsystem.setDefaultCommand(
+        new ShooterCommand(this.shooterSubsystem, 0).perpetually());
+
+    this.queuerSubsystem.setDefaultCommand(
+        new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED)
+            .perpetually()
+            .withName("PerpetualQueuerCommand"));
 
     this.queuerSubsystem.setDefaultCommand(new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED).perpetually().withName("PerpetualQueuerCommand"));
 
@@ -128,10 +133,15 @@ public class RobotContainer {
         new WristCommand(this.wristSubsystem, WristSetting.OUTTAKING)
             .andThen(new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING).perpetually()));
     // operator controls
+    operatorController.backButton.whenPressed(new HomeWristCommand(this.wristSubsystem));
     operatorController.leftTrigger.whileActiveContinuous(
         new WristCommand(this.wristSubsystem, WristSetting.INTAKING));
     operatorController.leftBumper.whileActiveContinuous(
         new WristCommand(this.wristSubsystem, WristSetting.STOWED));
+    operatorController.rightTrigger.whileActiveContinuous(
+        new ShooterCommand(this.shooterSubsystem, 2000).perpetually());
+    operatorController.rightBumper.whileActiveContinuous(
+        new ShooterCommand(this.shooterSubsystem, 0));
   }
 
   /**

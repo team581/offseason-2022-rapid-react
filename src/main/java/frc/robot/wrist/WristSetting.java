@@ -8,8 +8,9 @@ public enum WristSetting {
   UP(-0.11, 0),
   OUTTAKING(-0.44, 0),
   INTAKING(-0.55, 0),
-  STOWED(0, 0),
-  HOME(0, 0.1);
+  STOWED(-0.05, 0),
+  HOME(0, 2),
+  DONOTHING(0, 0);
   public final double angle;
   public final double voltage;
 
