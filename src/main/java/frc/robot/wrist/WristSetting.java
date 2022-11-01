@@ -10,7 +10,7 @@ public enum WristSetting {
   INTAKING(-0.55, 0),
   STOWED(-0.05, 0),
   HOME(0, 2),
-  DONOTHING(0,0);
+  DONOTHING(0, 0);
   public final double angle;
   public final double voltage;
 

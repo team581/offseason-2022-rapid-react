@@ -11,10 +11,9 @@ import frc.robot.wrist.WristSubsystem;
 public class HomeWristCommand extends CommandBase {
   private final WristSubsystem wrist;
 
-
   /** Creates a new HomeWristCommand. */
   public HomeWristCommand(WristSubsystem wrist) {
-    this.wrist=wrist;
+    this.wrist = wrist;
     addRequirements(wrist);
   }
 
@@ -26,17 +25,14 @@ public class HomeWristCommand extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-      this.wrist.resetEncoder();
-      this.wrist.setPosition(WristSetting.DONOTHING);
-    }
-
+    this.wrist.resetEncoder();
+    this.wrist.setPosition(WristSetting.DONOTHING);
+  }
 
   // Returns true when the command should end.
   @Override
