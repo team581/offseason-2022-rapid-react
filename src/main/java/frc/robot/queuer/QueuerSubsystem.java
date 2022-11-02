@@ -5,6 +5,7 @@
 package frc.robot.queuer;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +19,10 @@ public class QueuerSubsystem extends SubsystemBase {
   public QueuerSubsystem(CANSparkMax motor, DigitalInput sensor) {
     this.motor = motor;
     this.sensor = sensor;
+
+    this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 40);
+    this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 100);
+    this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 100);
   }
 
   public boolean hasBall() {

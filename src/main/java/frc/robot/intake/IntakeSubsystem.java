@@ -5,6 +5,7 @@
 package frc.robot.intake;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -14,6 +15,10 @@ public class IntakeSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem(CANSparkMax motor) {
     this.motor = motor;
+
+    this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 40);
+    this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 100);
+    this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 100);
   }
 
   @Override

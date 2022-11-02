@@ -5,6 +5,7 @@
 package frc.robot.wrist;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,6 +26,10 @@ public class WristSubsystem extends SubsystemBase {
     this.motor = motor;
     this.pid = motor.getPIDController();
     this.encoder = motor.getEncoder();
+
+    this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 40);
+    this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 100);
+    this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 100);
 
     this.pid.setP(0.4);
     this.pid.setI(0);
