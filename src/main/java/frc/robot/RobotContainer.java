@@ -19,9 +19,13 @@ import frc.robot.controller.DriveController;
 import frc.robot.example.ExampleSubsystem;
 import frc.robot.example.commands.ExampleCommand;
 import frc.robot.imu.ImuSubsystem;
-import frc.robot.intake.IntakeMode;
+import frc.robot.intake.IntakeSetting;
 import frc.robot.intake.IntakeSubsystem;
+import frc.robot.intake.commands.HomeIntakeCommand;
 import frc.robot.intake.commands.IntakeCommand;
+import frc.robot.intake_rollers.IntakeRollersMode;
+import frc.robot.intake_rollers.IntakeRollersSubsystem;
+import frc.robot.intake_rollers.commands.IntakeRollersCommand;
 import frc.robot.localization.Localization;
 import frc.robot.queuer.QueuerMode;
 import frc.robot.queuer.QueuerSubsystem;
@@ -33,10 +37,6 @@ import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveModuleConstants;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.commands.TeleopDriveCommand;
-import frc.robot.wrist.WristSetting;
-import frc.robot.wrist.WristSubsystem;
-import frc.robot.wrist.commands.HomeWristCommand;
-import frc.robot.wrist.commands.WristCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -52,10 +52,10 @@ public class RobotContainer {
       new ButtonController(new XboxController(Constants.OPERATOR_CONTROLLER_PORT));
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
+  private final IntakeRollersSubsystem intakeRollersSubsystem =
+      new IntakeRollersSubsystem(new CANSparkMax(15, MotorType.kBrushless));
   private final IntakeSubsystem intakeSubsystem =
-      new IntakeSubsystem(new CANSparkMax(15, MotorType.kBrushless));
-  private final WristSubsystem wristSubsystem =
-      new WristSubsystem(new CANSparkMax(16, MotorType.kBrushless));
+      new IntakeSubsystem(new CANSparkMax(16, MotorType.kBrushless));
   private final QueuerSubsystem queuerSubsystem =
       new QueuerSubsystem(new CANSparkMax(17, MotorType.kBrushless), new DigitalInput(0));
   private final ShooterSubsystem shooterSubsystem =
@@ -94,8 +94,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    this.intakeSubsystem.setDefaultCommand(
-        new IntakeCommand(this.intakeSubsystem, IntakeMode.STOPPED)
+    this.intakeRollersSubsystem.setDefaultCommand(
+        new IntakeRollersCommand(this.intakeRollersSubsystem, IntakeRollersMode.STOPPED)
             .perpetually()
             .withName("PerpetualIntakeCommand"));
 
@@ -126,26 +126,26 @@ public class RobotContainer {
     // driver controls
     this.driverController.startButton.whenPressed(() -> this.imuSubsystem.zero());
     driverController.leftTrigger.whileActiveContinuous(
-        new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING)
+        new IntakeRollersCommand(this.intakeRollersSubsystem, IntakeRollersMode.INTAKING)
             .perpetually()
-            .alongWith(new WristCommand(this.wristSubsystem, WristSetting.INTAKING))
+            .alongWith(new IntakeCommand(this.intakeSubsystem, IntakeSetting.INTAKING))
             .alongWith(
                 new QueuerCommand(this.queuerSubsystem, QueuerMode.QUEUEING)
                     .perpetually()
                     .until(() -> this.queuerSubsystem.hasBall())
                     .andThen(new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED))));
     driverController.leftBumper.whileActiveContinuous(
-        new WristCommand(this.wristSubsystem, WristSetting.OUTTAKING)
+        new IntakeCommand(this.intakeSubsystem, IntakeSetting.OUTTAKING)
             .andThen(
-                new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING)
+                new IntakeRollersCommand(this.intakeRollersSubsystem, IntakeRollersMode.OUTTAKING)
                     .perpetually()
                     .alongWith(new QueuerCommand(this.queuerSubsystem, QueuerMode.EJECT))));
     // operator controls
-    operatorController.backButton.whenPressed(new HomeWristCommand(this.wristSubsystem));
+    operatorController.backButton.whenPressed(new HomeIntakeCommand(this.intakeSubsystem));
     operatorController.leftTrigger.whileActiveContinuous(
-        new WristCommand(this.wristSubsystem, WristSetting.INTAKING));
+        new IntakeCommand(this.intakeSubsystem, IntakeSetting.INTAKING));
     operatorController.leftBumper.whileActiveContinuous(
-        new WristCommand(this.wristSubsystem, WristSetting.STOWED));
+        new IntakeCommand(this.intakeSubsystem, IntakeSetting.STOWED));
     operatorController.rightTrigger.whileActiveContinuous(
         new ShooterCommand(this.shooterSubsystem, 2500)
             .andThen(new QueuerCommand(this.queuerSubsystem, QueuerMode.SHOOT).perpetually()));

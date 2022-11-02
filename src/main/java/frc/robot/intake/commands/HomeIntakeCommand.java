@@ -2,27 +2,25 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.wrist.commands;
+package frc.robot.intake.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.wrist.WristSetting;
-import frc.robot.wrist.WristSubsystem;
+import frc.robot.intake.IntakeSetting;
+import frc.robot.intake.IntakeSubsystem;
 
-public class WristCommand extends CommandBase {
-  private final WristSetting position;
-  private final WristSubsystem wrist;
+public class HomeIntakeCommand extends CommandBase {
+  private final IntakeSubsystem intake;
 
-  /** Creates a new WristCommand. */
-  public WristCommand(WristSubsystem wrist, WristSetting goalPosition) {
-    this.wrist = wrist;
-    this.position = goalPosition;
-    addRequirements(wrist);
+  /** Creates a new HomeIntakeCommand. */
+  public HomeIntakeCommand(IntakeSubsystem intake) {
+    this.intake = intake;
+    addRequirements(intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.wrist.setPosition(this.position);
+    this.intake.setPosition(IntakeSetting.HOME);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -31,11 +29,14 @@ public class WristCommand extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    this.intake.resetEncoder();
+    this.intake.setPosition(IntakeSetting.DONOTHING);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return wrist.atPosition(this.position);
+    return this.intake.isHomed();
   }
 }
