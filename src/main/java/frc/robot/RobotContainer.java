@@ -102,8 +102,10 @@ public class RobotContainer {
     this.swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
 
-    this.shooterSubsystem.setDefaultCommand(
-        new ShooterCommand(this.shooterSubsystem, 0).perpetually());
+    // TODO: Try doing sequentual(ShooterCommand, parallel(QueuerCommand.perpetually(),
+    // ShooterCommand.perpetually()))
+    // this.shooterSubsystem.setDefaultCommand(
+    // new ShooterCommand(this.shooterSubsystem, 0).perpetually());
 
     this.queuerSubsystem.setDefaultCommand(
         new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED)
@@ -126,10 +128,18 @@ public class RobotContainer {
     driverController.leftTrigger.whileActiveContinuous(
         new IntakeCommand(this.intakeSubsystem, IntakeMode.INTAKING)
             .perpetually()
-            .alongWith(new WristCommand(this.wristSubsystem, WristSetting.INTAKING)));
+            .alongWith(new WristCommand(this.wristSubsystem, WristSetting.INTAKING))
+            .alongWith(
+                new QueuerCommand(this.queuerSubsystem, QueuerMode.QUEUEING)
+                    .perpetually()
+                    .until(() -> this.queuerSubsystem.hasBall())
+                    .andThen(new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED))));
     driverController.leftBumper.whileActiveContinuous(
         new WristCommand(this.wristSubsystem, WristSetting.OUTTAKING)
-            .andThen(new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING).perpetually()));
+            .andThen(
+                new IntakeCommand(this.intakeSubsystem, IntakeMode.OUTTAKING)
+                    .perpetually()
+                    .alongWith(new QueuerCommand(this.queuerSubsystem, QueuerMode.EJECT))));
     // operator controls
     operatorController.backButton.whenPressed(new HomeWristCommand(this.wristSubsystem));
     operatorController.leftTrigger.whileActiveContinuous(
@@ -137,7 +147,8 @@ public class RobotContainer {
     operatorController.leftBumper.whileActiveContinuous(
         new WristCommand(this.wristSubsystem, WristSetting.STOWED));
     operatorController.rightTrigger.whileActiveContinuous(
-        new ShooterCommand(this.shooterSubsystem, 2000).perpetually());
+        new ShooterCommand(this.shooterSubsystem, 2500)
+            .andThen(new QueuerCommand(this.queuerSubsystem, QueuerMode.SHOOT).perpetually()));
     operatorController.rightBumper.whileActiveContinuous(
         new ShooterCommand(this.shooterSubsystem, 0));
   }

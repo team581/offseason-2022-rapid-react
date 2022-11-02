@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class QueuerSubsystem extends SubsystemBase {
   private CANSparkMax motor;
   private DigitalInput sensor;
-  private QueuerMode mode;
+  private QueuerMode mode = QueuerMode.STOPPED;
 
   /** Creates a new QueuerSubsystem. */
   public QueuerSubsystem(CANSparkMax motor, DigitalInput sensor) {
@@ -26,14 +26,14 @@ public class QueuerSubsystem extends SubsystemBase {
   }
 
   public boolean hasBall() {
-    return sensor.get();
+    return !sensor.get();
   }
 
   @Override
   public void periodic() {
     this.motor.set(this.mode.percentage);
 
-    SmartDashboard.putBoolean("Queuer", hasBall());
+    SmartDashboard.putBoolean("Queuer/Sensor", hasBall());
   }
 
   public void setMode(QueuerMode mode) {
