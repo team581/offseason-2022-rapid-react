@@ -26,7 +26,7 @@ public class QueuerSubsystem extends SubsystemBase {
   }
 
   public boolean hasBall() {
-    return !sensor.get();
+    return sensor.get();
   }
 
   @Override
