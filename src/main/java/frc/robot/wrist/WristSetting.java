@@ -7,7 +7,7 @@ package frc.robot.wrist;
 public enum WristSetting {
   UP(-0.11, 0),
   OUTTAKING(-0.44, 0),
-  INTAKING(-0.55, 0),
+  INTAKING(-0.65, 0),
   STOWED(-0.05, 0),
   HOME(0, 2),
   DONOTHING(0, 0);
