@@ -14,10 +14,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.controller.ButtonController;
 import frc.robot.controller.DriveController;
-import frc.robot.elevator.ElevatorPosition;
+import frc.robot.elevator.ElevatorSetting;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.commands.ElevatorGoToPosition;
 import frc.robot.elevator.commands.ElevatorSetPercent;
+import frc.robot.elevator.commands.HomeElevatorCommand;
 import frc.robot.example.ExampleSubsystem;
 import frc.robot.example.commands.ExampleCommand;
 import frc.robot.imu.ImuSubsystem;
@@ -84,14 +85,14 @@ public class RobotContainer {
   private void configureButtonBindings() {
     driverController
         .rightBumper
-        .whenPressed(new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.DEPLOYED))
-        .whenReleased(new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.LATCHED));
+        .whenPressed(new ElevatorGoToPosition(elevatorSubsystem, ElevatorSetting.DEPLOYED))
+        .whenReleased(new ElevatorGoToPosition(elevatorSubsystem, ElevatorSetting.LATCHED));
     new Trigger(() -> copilotController.getRightY() > 0.5)
         .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.15));
     new Trigger(() -> copilotController.getRightY() < -0.5)
         .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.15));
     copilotController.startButton.whenPressed(
-        new ElevatorGoToPosition(elevatorSubsystem, ElevatorPosition.STOWED));
+        new HomeElevatorCommand(elevatorSubsystem));
   }
 
   /**

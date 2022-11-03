@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.elevator.commands.ElevatorGoToPosition;
 import frc.robot.misc.util.GearingConverter;
 import frc.robot.misc.util.sensors.SensorUnitConverter;
 
@@ -18,6 +19,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       GearingConverter.fromUpduction(Units.inchesToMeters(1.7507));
   private static GearingConverter GEARING = GearingConverter.fromReduction(60);
   private static double HEIGHT_TOLERANCE = 1;
+  private static final double HOMED_CURRENT = 15;
+
 
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem(TalonFX motor) {
@@ -35,6 +38,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Elevator Height (inch)", getHeight());
+
   }
 
   public void setPercent(double percent) {
@@ -42,7 +46,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     motor.set(ControlMode.PercentOutput, percent);
   }
 
-  public void setPosition(ElevatorPosition position) {
+  public void setPosition(ElevatorSetting position) {
     // Move the elevator to a certain height based on encoder readings
     // motor.set(ControlMode.)
     final var heightBeforeSprocket = SPROCKET_TO_CHAIN.afterToBeforeGearing(position.height);
@@ -66,12 +70,16 @@ public class ElevatorSubsystem extends SubsystemBase {
     return motor.getStatorCurrent();
   }
 
-  public void zeroEncoder() {
+  public void resetEncoder() {
     // Set the encoder value to zero
     motor.setSelectedSensorPosition(0);
   }
 
-  public boolean atPosition(ElevatorPosition position) {
+  public boolean atPosition(ElevatorSetting position) {
     return Math.abs(getHeight() - position.height) < HEIGHT_TOLERANCE;
+  }
+
+  public boolean isHomed(){
+    return this.getCurrent() > HOMED_CURRENT;
   }
 }

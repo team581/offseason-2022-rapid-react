@@ -4,14 +4,13 @@
 
 package frc.robot.elevator;
 
-public enum ElevatorPosition {
+public enum ElevatorSetting {
   STOWED(0),
   DEPLOYED(20),
   LATCHED(10);
 
   public final double height;
-
-  private ElevatorPosition(double height) {
+  private ElevatorSetting(double height) {
     this.height = height;
   }
 }

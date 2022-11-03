@@ -8,34 +8,36 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.elevator.ElevatorSetting;
 import frc.robot.elevator.ElevatorSubsystem;
 
-public class ElevatorGoToPosition extends CommandBase {
+public class HomeElevatorCommand extends CommandBase {
   private final ElevatorSubsystem elevator;
-  private final ElevatorSetting position;
-
-  /** Creates a new ElevatorGoToPosition. */
-  public ElevatorGoToPosition(ElevatorSubsystem elevator, ElevatorSetting position) {
-    this.elevator = elevator;
-    this.position = position;
+  /** Creates a new HomeElevatorCommand. */
+  public HomeElevatorCommand(ElevatorSubsystem elevator) {
+    this.elevator=elevator;
     addRequirements(elevator);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.setPosition(position);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    this.elevator.setPercent(-0.1);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    this.elevator.resetEncoder();
+    this.elevator.setPercent(0);
+    this.elevator.setPosition(ElevatorSetting.STOWED);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return elevator.atPosition(position);
+    return this.elevator.isHomed();
   }
 }
