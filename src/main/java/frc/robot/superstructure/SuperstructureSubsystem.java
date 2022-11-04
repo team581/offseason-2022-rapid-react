@@ -68,7 +68,7 @@ public class SuperstructureSubsystem extends SubsystemBase {
   }
 
   public void setIntakeMode(RobotIntakeMode intakeMode) {
-    if(!this.isIntakeHoming) {
+    if (!this.isIntakeHoming) {
       this.intakeMode = intakeMode;
       if (intakeMode == RobotIntakeMode.INTAKING) {
         this.intakeWrist.setPosition(IntakeSetting.INTAKING);
