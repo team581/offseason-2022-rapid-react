@@ -5,6 +5,7 @@
 package frc.robot.superstructure;
 
 public enum RobotShooterMode {
+  MANUAL_SPINUP,
   SHOOTING,
   STOPPED;
 }
