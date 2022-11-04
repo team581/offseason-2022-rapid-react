@@ -8,6 +8,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+
+import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,7 +20,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private final RelativeEncoder encoder;
   private double goalRPM = 0;
   private double voltageCompensationReference = 10;
-
+  private InterpolatingTreeMap<Double, Double> distanceToRPM = new InterpolatingTreeMap<>();
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem(CANSparkMax motor) {
     this.motor = motor;
@@ -38,6 +40,10 @@ public class ShooterSubsystem extends SubsystemBase {
     this.pid.setIZone(0);
     this.pid.setFF(0.00023);
     this.pid.setOutputRange(0, 1);
+
+    this.distanceToRPM.put(0.0, 0.0);
+    this.distanceToRPM.put(1.0, 100.0);
+    this.distanceToRPM.put(2.0,200.0);
   }
 
   public double getRPM() {
@@ -54,9 +60,20 @@ public class ShooterSubsystem extends SubsystemBase {
     return Math.abs(setpoint - getRPM()) <= TOLERANCE;
   }
 
+  public void shootForDistance(double ty) {
+
+    setRPM(this.distanceToRPM.get(ty));
+  }
+
+    public boolean isAtRPMForDistance(double ty) {
+      return isAtRPM(this.distanceToRPM.get(ty));
+    }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter/RPM", getRPM());
     this.pid.setReference(goalRPM, CANSparkMax.ControlType.kVelocity);
   }
+
+
 }
