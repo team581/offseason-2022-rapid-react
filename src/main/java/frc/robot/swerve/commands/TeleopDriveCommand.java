@@ -4,7 +4,11 @@
 
 package frc.robot.swerve.commands;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.controller.DriveController;
 import frc.robot.swerve.SwerveSubsystem;
@@ -13,11 +17,13 @@ public class TeleopDriveCommand extends CommandBase {
 
   private final SwerveSubsystem swerveSubsystem;
   private final DriveController controller;
+  private PIDController autoAimPD;
 
   /** Creates a new TeleopDriveCommand. */
   public TeleopDriveCommand(SwerveSubsystem swerveSubsystem, DriveController controller) {
     this.swerveSubsystem = swerveSubsystem;
     this.controller = controller;
+    this.autoAimPD = new PIDController(0.01, 0, 0.1);
 
     addRequirements(swerveSubsystem);
   }
@@ -35,6 +41,9 @@ public class TeleopDriveCommand extends CommandBase {
 
     final var slowMode = controller.leftTrigger.get();
     final var robotRelative = controller.rightTrigger.get();
+    // TODO: Update this keybind based off the controls slideshow
+    final var autoAim = controller.rightBumper.get();
+
 
     var sidewaysPercentage = controller.getSidewaysPercentage();
     var forwardPercentage = controller.getForwardPercentage();
@@ -44,6 +53,13 @@ public class TeleopDriveCommand extends CommandBase {
       sidewaysPercentage *= 0.5;
       forwardPercentage *= 0.5;
       thetaPercentage *= 0.5;
+    }
+
+    if (autoAim) {
+      NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-upper");
+      double targetOffsetAngle_Horizontal = table.getEntry("tx").getDouble(0);
+      thetaPercentage = -autoAimPD.calculate(targetOffsetAngle_Horizontal, 0);
+      SmartDashboard.putNumber("Pickle", thetaPercentage);
     }
 
     swerveSubsystem.driveTeleop(
