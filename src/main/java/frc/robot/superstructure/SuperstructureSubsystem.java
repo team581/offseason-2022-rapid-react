@@ -46,8 +46,6 @@ public class SuperstructureSubsystem extends SubsystemBase {
     } else {
       this.savedRPM = 600;
     }
-    SmartDashboard.putNumber("Shooter/Saved RPM", this.savedRPM);
-    SmartDashboard.putString("Shooter/Superstructure Mode", this.shooterMode.toString());
     this.shooter.setRPM(this.savedRPM);
 
     // intake roller logic
