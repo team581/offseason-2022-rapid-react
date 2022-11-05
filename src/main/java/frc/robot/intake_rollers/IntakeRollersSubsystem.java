@@ -6,6 +6,7 @@ package frc.robot.intake_rollers;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeRollersSubsystem extends SubsystemBase {
@@ -24,6 +25,7 @@ public class IntakeRollersSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     this.motor.set(this.mode.percentage);
+    SmartDashboard.putString("IntakeRollers/Mode", this.mode.toString());
   }
 
   public void setMode(IntakeRollersMode mode) {

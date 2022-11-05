@@ -4,6 +4,7 @@
 
 package frc.robot.superstructure;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.intake.IntakeSetting;
 import frc.robot.intake.IntakeSubsystem;
@@ -37,15 +38,16 @@ public class SuperstructureSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-
     // shooter logic
-    if (shooterMode == RobotShooterMode.MANUAL_SPINUP) {
-      this.savedRPM = 2500;
-    } else if (shooterMode == RobotShooterMode.STOPPED) {
-      this.savedRPM = 0;
-    } else if (shooterMode == RobotShooterMode.AUTO_SPINUP) {
+    if (shooterMode == RobotShooterMode.MANUAL_SHOOT) {
+      this.savedRPM = 2400;
+    } else if (shooterMode == RobotShooterMode.AUTO_SHOOT) {
       this.savedRPM = ShooterSubsystem.getRPMForAutoShoot();
+    } else {
+      this.savedRPM = 600;
     }
+    SmartDashboard.putNumber("Shooter/Saved RPM", this.savedRPM);
+    SmartDashboard.putString("Shooter/Superstructure Mode", this.shooterMode.toString());
     this.shooter.setRPM(this.savedRPM);
 
     // intake roller logic
@@ -53,17 +55,17 @@ public class SuperstructureSubsystem extends SubsystemBase {
       this.intakeRollers.setMode(IntakeRollersMode.INTAKING);
     } else if (intakeMode == RobotIntakeMode.OUTTAKING) {
       this.intakeRollers.setMode(IntakeRollersMode.OUTTAKING);
-    } else if (intakeMode == RobotIntakeMode.STOPPED) {
+    } else {
       this.intakeRollers.setMode(IntakeRollersMode.STOPPED);
     }
 
     // queuer logic
-    if (shooterMode == RobotShooterMode.SHOOTING) {
+    if (shooterMode != RobotShooterMode.STOPPED && isAtRPM()) {
       this.queuer.setMode(QueuerMode.SHOOT);
     } else if (intakeMode == RobotIntakeMode.INTAKING) {
-      this.queuer.setMode(QueuerMode.QUEUEING);
+      this.queuer.setMode(QueuerMode.INTAKING);
     } else if (intakeMode == RobotIntakeMode.OUTTAKING) {
-      this.queuer.setMode(QueuerMode.EJECT);
+      this.queuer.setMode(QueuerMode.OUTTAKING);
     } else {
       this.queuer.setMode(QueuerMode.STOPPED);
     }

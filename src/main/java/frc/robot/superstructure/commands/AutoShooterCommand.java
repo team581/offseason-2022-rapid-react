@@ -19,25 +19,19 @@ public class AutoShooterCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.superStructure.setShooterMode(RobotShooterMode.AUTO_SPINUP);
-
+    this.superStructure.setShooterMode(RobotShooterMode.AUTO_SHOOT);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (this.superStructure.isAtRPM()) {
-      this.superStructure.setShooterMode(RobotShooterMode.SHOOTING);
-    } else {
-      this.superStructure.setShooterMode(RobotShooterMode.AUTO_SPINUP);
-    }
+    this.superStructure.setShooterMode(RobotShooterMode.AUTO_SHOOT);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     this.superStructure.setShooterMode(RobotShooterMode.STOPPED);
-
   }
 
   // Returns true when the command should end.

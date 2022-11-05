@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -18,13 +17,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
   private static final double TOLERANCE = 50;
-  private static final NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+  private static final NetworkTable table =
+      NetworkTableInstance.getDefault().getTable("limelight-upper");
   private static final NetworkTableEntry tyEntry = table.getEntry("ty");
-  private static final InterpolatingTreeMap<Double, Double> distanceToRPM = new InterpolatingTreeMap<>();
+  private static final InterpolatingTreeMap<Double, Double> distanceToRPM =
+      new InterpolatingTreeMap<>();
 
   private static double getTY() {
     return tyEntry.getDouble(0.0);
   }
+
   private final CANSparkMax motor;
   private final SparkMaxPIDController pid;
   private final RelativeEncoder encoder;
@@ -50,9 +52,9 @@ public class ShooterSubsystem extends SubsystemBase {
     this.pid.setFF(0.00023);
     this.pid.setOutputRange(0, 1);
 
-    distanceToRPM.put(0.0, 0.0);
-    distanceToRPM.put(1.0, 100.0);
-    distanceToRPM.put(2.0, 200.0);
+    distanceToRPM.put(-4.78, 2400.0);
+    distanceToRPM.put(-5.4, 2500.0);
+    distanceToRPM.put(-20.1, 3500.0);
   }
 
   public double getRPM() {
@@ -81,10 +83,10 @@ public class ShooterSubsystem extends SubsystemBase {
     return isAtRPM(this.distanceToRPM.get(ty));
   }
 
-
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter/RPM", getRPM());
+    SmartDashboard.putNumber("Shooter/GoalRPM", goalRPM);
     this.pid.setReference(goalRPM, CANSparkMax.ControlType.kVelocity);
   }
 }
