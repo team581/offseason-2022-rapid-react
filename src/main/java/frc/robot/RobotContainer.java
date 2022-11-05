@@ -34,7 +34,6 @@ import frc.robot.superstructure.RobotIntakeMode;
 import frc.robot.superstructure.SuperstructureSubsystem;
 import frc.robot.superstructure.commands.IntakeSubsystemCommand;
 import frc.robot.superstructure.commands.ManualShooterCommand;
-import frc.robot.shooter.commands.ShooterRPMCommand;
 import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveModuleConstants;

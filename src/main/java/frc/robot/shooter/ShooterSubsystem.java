@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -43,7 +42,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     this.distanceToRPM.put(0.0, 0.0);
     this.distanceToRPM.put(1.0, 100.0);
-    this.distanceToRPM.put(2.0,200.0);
+    this.distanceToRPM.put(2.0, 200.0);
   }
 
   public double getRPM() {
@@ -65,15 +64,13 @@ public class ShooterSubsystem extends SubsystemBase {
     setRPM(this.distanceToRPM.get(ty));
   }
 
-    public boolean isAtRPMForDistance(double ty) {
-      return isAtRPM(this.distanceToRPM.get(ty));
-    }
+  public boolean isAtRPMForDistance(double ty) {
+    return isAtRPM(this.distanceToRPM.get(ty));
+  }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter/RPM", getRPM());
     this.pid.setReference(goalRPM, CANSparkMax.ControlType.kVelocity);
   }
-
-
 }
