@@ -4,7 +4,6 @@
 
 package frc.robot.superstructure;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.intake.IntakeSetting;
 import frc.robot.intake.IntakeSubsystem;
