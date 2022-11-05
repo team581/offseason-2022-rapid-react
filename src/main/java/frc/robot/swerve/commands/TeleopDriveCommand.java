@@ -18,12 +18,13 @@ public class TeleopDriveCommand extends CommandBase {
   private final SwerveSubsystem swerveSubsystem;
   private final DriveController controller;
   private PIDController autoAimPD;
+  private double targetAngle = 0;
 
   /** Creates a new TeleopDriveCommand. */
   public TeleopDriveCommand(SwerveSubsystem swerveSubsystem, DriveController controller) {
     this.swerveSubsystem = swerveSubsystem;
     this.controller = controller;
-    this.autoAimPD = new PIDController(0.01, 0, 0.1);
+    this.autoAimPD = new PIDController(0.01, 0, 0.001);
 
     addRequirements(swerveSubsystem);
   }
@@ -54,12 +55,19 @@ public class TeleopDriveCommand extends CommandBase {
       forwardPercentage *= 0.5;
       thetaPercentage *= 0.5;
     }
-
+    if(controller.aButton.get()){
+      targetAngle += 0.1;
+    }else if (controller.bButton.get()) {
+      targetAngle -= 0.1;
+    }
     if (autoAim) {
       NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-upper");
       double targetOffsetAngle_Horizontal = table.getEntry("tx").getDouble(0);
       thetaPercentage = -autoAimPD.calculate(targetOffsetAngle_Horizontal, 0);
+      if(Math.abs(thetaPercentage) < 0.02) thetaPercentage = 0;
       SmartDashboard.putNumber("Pickle", thetaPercentage);
+      // SmartDashboard.putNumber("Magnum", targetAngle);
+      // SmartDashboard.putNumber("Fox", swerveSubsystem.getAngle());
     }
 
     swerveSubsystem.driveTeleop(
