@@ -8,18 +8,19 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.superstructure.RobotShooterMode;
 import frc.robot.superstructure.SuperstructureSubsystem;
 
-public class ManualShooterCommand extends CommandBase {
+public class AutoShooterCommand extends CommandBase {
   private SuperstructureSubsystem superStructure;
 
-  /** Creates a new ManualShooterCommand. */
-  public ManualShooterCommand(SuperstructureSubsystem superStructure) {
+  /** Creates a new AutoShooterCommand. */
+  public AutoShooterCommand(SuperstructureSubsystem superStructure) {
     this.superStructure = superStructure;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.superStructure.setShooterMode(RobotShooterMode.MANUAL_SPINUP);
+    this.superStructure.setShooterMode(RobotShooterMode.AUTO_SPINUP);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -28,7 +29,7 @@ public class ManualShooterCommand extends CommandBase {
     if (this.superStructure.isAtRPM()) {
       this.superStructure.setShooterMode(RobotShooterMode.SHOOTING);
     } else {
-      this.superStructure.setShooterMode(RobotShooterMode.MANUAL_SPINUP);
+      this.superStructure.setShooterMode(RobotShooterMode.AUTO_SPINUP);
     }
   }
 
@@ -36,6 +37,7 @@ public class ManualShooterCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     this.superStructure.setShooterMode(RobotShooterMode.STOPPED);
+
   }
 
   // Returns true when the command should end.

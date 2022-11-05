@@ -43,6 +43,8 @@ public class SuperstructureSubsystem extends SubsystemBase {
       this.savedRPM = 2500;
     } else if (shooterMode == RobotShooterMode.STOPPED) {
       this.savedRPM = 0;
+    } else if (shooterMode == RobotShooterMode.AUTO_SPINUP) {
+      this.savedRPM = ShooterSubsystem.getRPMForAutoShoot();
     }
     this.shooter.setRPM(this.savedRPM);
 
