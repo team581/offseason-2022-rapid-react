@@ -59,6 +59,7 @@ public class SuperstructureSubsystem extends SubsystemBase {
     // queuer logic
     if (shooterMode != RobotShooterMode.STOPPED && isAtRPM()) {
       this.queuer.setMode(QueuerMode.SHOOT);
+      this.intakeRollers.setMode(IntakeRollersMode.INTAKING);
     } else if (intakeMode == RobotIntakeMode.INTAKING) {
       this.queuer.setMode(QueuerMode.INTAKING);
     } else if (intakeMode == RobotIntakeMode.OUTTAKING) {
