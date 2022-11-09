@@ -4,6 +4,7 @@
 
 package frc.robot.superstructure;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.intake.IntakeSetting;
 import frc.robot.intake.IntakeSubsystem;
@@ -12,12 +13,15 @@ import frc.robot.intake_rollers.IntakeRollersSubsystem;
 import frc.robot.queuer.QueuerMode;
 import frc.robot.queuer.QueuerSubsystem;
 import frc.robot.shooter.ShooterSubsystem;
+import frc.robot.swerve.SwerveSubsystem;
 
 public class SuperstructureSubsystem extends SubsystemBase {
-  private IntakeSubsystem intakeWrist;
-  private IntakeRollersSubsystem intakeRollers;
-  private QueuerSubsystem queuer;
-  private ShooterSubsystem shooter;
+  private static final double MAX_ROBOT_SPEED_WHILE_SHOOTING = 1;
+  private final IntakeSubsystem intakeWrist;
+  private final IntakeRollersSubsystem intakeRollers;
+  private final QueuerSubsystem queuer;
+  private final ShooterSubsystem shooter;
+  private final SwerveSubsystem swerve;
   private RobotIntakeMode intakeMode = RobotIntakeMode.STOPPED;
   private RobotShooterMode shooterMode = RobotShooterMode.STOPPED;
   private double savedRPM = 0;
@@ -28,11 +32,13 @@ public class SuperstructureSubsystem extends SubsystemBase {
       IntakeSubsystem intake,
       IntakeRollersSubsystem intakeRollers,
       QueuerSubsystem queuer,
-      ShooterSubsystem shooter) {
+      ShooterSubsystem shooter,
+      SwerveSubsystem swerve) {
     this.intakeWrist = intake;
     this.intakeRollers = intakeRollers;
     this.queuer = queuer;
     this.shooter = shooter;
+    this.swerve = swerve;
   }
 
   @Override
@@ -57,7 +63,7 @@ public class SuperstructureSubsystem extends SubsystemBase {
     }
 
     // queuer logic
-    if (shooterMode != RobotShooterMode.STOPPED && isAtRPM()) {
+    if (shooterMode != RobotShooterMode.STOPPED && isAtRPM() && robotSpeedCanShoot()) {
       this.queuer.setMode(QueuerMode.SHOOT);
       this.intakeRollers.setMode(IntakeRollersMode.INTAKING);
     } else if (intakeMode == RobotIntakeMode.INTAKING) {
@@ -98,5 +104,11 @@ public class SuperstructureSubsystem extends SubsystemBase {
 
   public boolean isAtRPM() {
     return this.shooter.isAtRPM(savedRPM);
+  }
+
+  private boolean robotSpeedCanShoot() {
+    ChassisSpeeds speed = swerve.getChassisSpeeds();
+    return speed.vxMetersPerSecond < MAX_ROBOT_SPEED_WHILE_SHOOTING
+        && speed.vyMetersPerSecond < MAX_ROBOT_SPEED_WHILE_SHOOTING;
   }
 }

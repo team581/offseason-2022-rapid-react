@@ -90,7 +90,11 @@ public class RobotContainer {
   private final Localization localization = new Localization(swerveSubsystem, imuSubsystem);
   private final SuperstructureSubsystem superStructure =
       new SuperstructureSubsystem(
-          intakeSubsystem, intakeRollersSubsystem, queuerSubsystem, shooterSubsystem);
+          intakeSubsystem,
+          intakeRollersSubsystem,
+          queuerSubsystem,
+          shooterSubsystem,
+          swerveSubsystem);
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
