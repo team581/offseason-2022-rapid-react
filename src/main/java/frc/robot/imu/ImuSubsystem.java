@@ -29,4 +29,8 @@ public class ImuSubsystem extends SubsystemBase {
   public void zero() {
     this.imu.setYaw(0);
   }
+
+  public void setAngle(double zeroAngle) {
+    this.imu.setYaw(zeroAngle);
+  }
 }

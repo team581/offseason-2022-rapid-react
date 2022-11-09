@@ -51,7 +51,7 @@ public class RobotContainer {
   private final ButtonController operatorController =
       new ButtonController(new XboxController(Constants.OPERATOR_CONTROLLER_PORT));
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
+  public final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
   private final IntakeRollersSubsystem intakeRollersSubsystem =
       new IntakeRollersSubsystem(new CANSparkMax(15, MotorType.kBrushless));
   private final IntakeSubsystem intakeSubsystem =
