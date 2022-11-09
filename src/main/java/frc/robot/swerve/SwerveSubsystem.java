@@ -104,4 +104,8 @@ public class SwerveSubsystem extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), true);
   }
+
+  public double getAngle() {
+    return imu.getRobotHeading().getDegrees();
+  }
 }
