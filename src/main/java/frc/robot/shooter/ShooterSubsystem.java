@@ -87,6 +87,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Shooter/RPM", getRPM());
     SmartDashboard.putNumber("Shooter/GoalRPM", goalRPM);
+    SmartDashboard.putNumber("Shooter/Amps", this.motor.getOutputCurrent());
+    SmartDashboard.putNumber("Shooter/OutputVoltage", this.motor.getAppliedOutput());
     this.pid.setReference(goalRPM, CANSparkMax.ControlType.kVelocity);
   }
 }
