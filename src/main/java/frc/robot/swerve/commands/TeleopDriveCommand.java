@@ -17,7 +17,6 @@ public class TeleopDriveCommand extends CommandBase {
   private final SwerveSubsystem swerveSubsystem;
   private final DriveController controller;
   private PIDController autoAimPD;
-  private double targetAngle = 0;
 
   /** Creates a new TeleopDriveCommand. */
   public TeleopDriveCommand(SwerveSubsystem swerveSubsystem, DriveController controller) {
@@ -45,11 +44,6 @@ public class TeleopDriveCommand extends CommandBase {
     var forwardPercentage = controller.getForwardPercentage();
     var thetaPercentage = controller.getThetaPercentage();
 
-    if (controller.aButton.get()) {
-      targetAngle += 0.1;
-    } else if (controller.bButton.get()) {
-      targetAngle -= 0.1;
-    }
     if (autoAim) {
       NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-upper");
       double targetOffsetAngle_Horizontal = table.getEntry("tx").getDouble(0);
