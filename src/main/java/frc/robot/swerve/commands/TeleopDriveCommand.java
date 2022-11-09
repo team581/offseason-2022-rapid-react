@@ -8,7 +8,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.controller.DriveController;
 import frc.robot.swerve.SwerveSubsystem;
@@ -40,38 +39,25 @@ public class TeleopDriveCommand extends CommandBase {
       return;
     }
 
-    final var slowMode = controller.leftTrigger.get();
-    final var robotRelative = controller.rightTrigger.get();
-    // TODO: Update this keybind based off the controls slideshow
-    final var autoAim = controller.rightBumper.get();
-
+    final var autoAim = controller.rightTrigger.get();
 
     var sidewaysPercentage = controller.getSidewaysPercentage();
     var forwardPercentage = controller.getForwardPercentage();
     var thetaPercentage = controller.getThetaPercentage();
 
-    if (slowMode) {
-      sidewaysPercentage *= 0.5;
-      forwardPercentage *= 0.5;
-      thetaPercentage *= 0.5;
-    }
-    if(controller.aButton.get()){
+    if (controller.aButton.get()) {
       targetAngle += 0.1;
-    }else if (controller.bButton.get()) {
+    } else if (controller.bButton.get()) {
       targetAngle -= 0.1;
     }
     if (autoAim) {
       NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-upper");
       double targetOffsetAngle_Horizontal = table.getEntry("tx").getDouble(0);
       thetaPercentage = -autoAimPD.calculate(targetOffsetAngle_Horizontal, 0);
-      if(Math.abs(thetaPercentage) < 0.02) thetaPercentage = 0;
-      SmartDashboard.putNumber("Pickle", thetaPercentage);
-      // SmartDashboard.putNumber("Magnum", targetAngle);
-      // SmartDashboard.putNumber("Fox", swerveSubsystem.getAngle());
+      if (Math.abs(thetaPercentage) < 0.02) thetaPercentage = 0;
     }
 
-    swerveSubsystem.driveTeleop(
-        sidewaysPercentage, -forwardPercentage, thetaPercentage, !robotRelative);
+    swerveSubsystem.driveTeleop(sidewaysPercentage, -forwardPercentage, thetaPercentage, false);
   }
 
   // Called once the command ends or is interrupted.
