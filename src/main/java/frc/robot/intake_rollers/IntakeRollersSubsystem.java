@@ -20,6 +20,8 @@ public class IntakeRollersSubsystem extends SubsystemBase {
     this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 40);
     this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 100);
     this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 100);
+
+    this.motor.setSmartCurrentLimit(40);
   }
 
   @Override
