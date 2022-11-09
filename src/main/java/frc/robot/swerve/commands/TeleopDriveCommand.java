@@ -57,7 +57,7 @@ public class TeleopDriveCommand extends CommandBase {
       if (Math.abs(thetaPercentage) < 0.02) thetaPercentage = 0;
     }
 
-    swerveSubsystem.driveTeleop(sidewaysPercentage, -forwardPercentage, thetaPercentage, false);
+    swerveSubsystem.driveTeleop(sidewaysPercentage, -forwardPercentage, thetaPercentage, true);
   }
 
   // Called once the command ends or is interrupted.
