@@ -6,8 +6,8 @@ package frc.robot.queuer;
 
 public enum QueuerMode {
   STOPPED(0),
-  QUEUEING(0.10),
-  EJECT(-0.5),
+  INTAKING(0.10),
+  OUTTAKING(-0.5),
   SHOOT(0.75);
 
   public final double percentage;

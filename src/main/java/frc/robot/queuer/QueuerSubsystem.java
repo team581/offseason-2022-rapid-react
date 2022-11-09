@@ -31,9 +31,14 @@ public class QueuerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    this.motor.set(this.mode.percentage);
+    if (this.hasBall() && this.mode == QueuerMode.INTAKING) {
+      this.motor.set(0);
+    } else {
+      this.motor.set(this.mode.percentage);
+    }
 
     SmartDashboard.putBoolean("Queuer/Sensor", hasBall());
+    SmartDashboard.putString("Queuer/Mode", this.mode.toString());
   }
 
   public void setMode(QueuerMode mode) {

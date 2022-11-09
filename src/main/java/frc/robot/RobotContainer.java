@@ -22,16 +22,15 @@ import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.IntakeSetting;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.HomeIntakeCommand;
-import frc.robot.intake.commands.IntakeCommand;
-import frc.robot.intake_rollers.IntakeRollersMode;
 import frc.robot.intake_rollers.IntakeRollersSubsystem;
-import frc.robot.intake_rollers.commands.IntakeRollersCommand;
 import frc.robot.localization.Localization;
-import frc.robot.queuer.QueuerMode;
 import frc.robot.queuer.QueuerSubsystem;
-import frc.robot.queuer.command.QueuerCommand;
 import frc.robot.shooter.ShooterSubsystem;
-import frc.robot.shooter.commands.ShooterCommand;
+import frc.robot.superstructure.RobotIntakeMode;
+import frc.robot.superstructure.SuperstructureSubsystem;
+import frc.robot.superstructure.commands.AutoShooterCommand;
+import frc.robot.superstructure.commands.IntakeSubsystemCommand;
+import frc.robot.superstructure.commands.ManualShooterCommand;
 import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveModuleConstants;
@@ -89,15 +88,14 @@ public class RobotContainer {
               new TalonFX(9),
               new CANCoder(13)));
   private final Localization localization = new Localization(swerveSubsystem, imuSubsystem);
+  private final SuperstructureSubsystem superStructure =
+      new SuperstructureSubsystem(
+          intakeSubsystem, intakeRollersSubsystem, queuerSubsystem, shooterSubsystem);
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    this.intakeRollersSubsystem.setDefaultCommand(
-        new IntakeRollersCommand(this.intakeRollersSubsystem, IntakeRollersMode.STOPPED)
-            .perpetually()
-            .withName("PerpetualIntakeCommand"));
 
     this.swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
@@ -106,11 +104,6 @@ public class RobotContainer {
     // ShooterCommand.perpetually()))
     // this.shooterSubsystem.setDefaultCommand(
     // new ShooterCommand(this.shooterSubsystem, 0).perpetually());
-
-    this.queuerSubsystem.setDefaultCommand(
-        new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED)
-            .perpetually()
-            .withName("PerpetualQueuerCommand"));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -126,31 +119,18 @@ public class RobotContainer {
     // driver controls
     this.driverController.startButton.whenPressed(() -> this.imuSubsystem.zero());
     driverController.leftTrigger.whileActiveContinuous(
-        new IntakeRollersCommand(this.intakeRollersSubsystem, IntakeRollersMode.INTAKING)
-            .perpetually()
-            .alongWith(new IntakeCommand(this.intakeSubsystem, IntakeSetting.INTAKING))
-            .alongWith(
-                new QueuerCommand(this.queuerSubsystem, QueuerMode.QUEUEING)
-                    .perpetually()
-                    .until(() -> this.queuerSubsystem.hasBall())
-                    .andThen(new QueuerCommand(this.queuerSubsystem, QueuerMode.STOPPED))));
+        new IntakeSubsystemCommand(superStructure, RobotIntakeMode.INTAKING));
     driverController.leftBumper.whileActiveContinuous(
-        new IntakeCommand(this.intakeSubsystem, IntakeSetting.OUTTAKING)
-            .andThen(
-                new IntakeRollersCommand(this.intakeRollersSubsystem, IntakeRollersMode.OUTTAKING)
-                    .perpetually()
-                    .alongWith(new QueuerCommand(this.queuerSubsystem, QueuerMode.EJECT))));
+        new IntakeSubsystemCommand(superStructure, RobotIntakeMode.OUTTAKING));
+    driverController.rightTrigger.whileActiveContinuous(new AutoShooterCommand(superStructure));
     // operator controls
-    operatorController.backButton.whenPressed(new HomeIntakeCommand(this.intakeSubsystem));
+    operatorController.backButton.whenPressed(
+        new HomeIntakeCommand(this.intakeSubsystem, superStructure));
     operatorController.leftTrigger.whileActiveContinuous(
-        new IntakeCommand(this.intakeSubsystem, IntakeSetting.INTAKING));
+        () -> this.superStructure.setIntakePosition(IntakeSetting.INTAKING));
     operatorController.leftBumper.whileActiveContinuous(
-        new IntakeCommand(this.intakeSubsystem, IntakeSetting.STOWED));
-    operatorController.rightTrigger.whileActiveContinuous(
-        new ShooterCommand(this.shooterSubsystem, 2500)
-            .andThen(new QueuerCommand(this.queuerSubsystem, QueuerMode.SHOOT).perpetually()));
-    operatorController.rightBumper.whileActiveContinuous(
-        new ShooterCommand(this.shooterSubsystem, 0));
+        () -> this.superStructure.setIntakePosition(IntakeSetting.UP));
+    operatorController.rightTrigger.whileActiveContinuous(new ManualShooterCommand(superStructure));
   }
 
   /**
