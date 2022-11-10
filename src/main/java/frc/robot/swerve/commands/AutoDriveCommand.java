@@ -4,36 +4,64 @@
 
 package frc.robot.swerve.commands;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.controller.DriveController;
+import frc.robot.localization.Localization;
 import frc.robot.swerve.SwerveSubsystem;
 
 public class AutoDriveCommand extends CommandBase {
-  private SwerveSubsystem swerveSubsystem;
-  private DriveController controller;
+  private final SwerveSubsystem swerveSubsystem;
+  private final Localization localization;
+  private final Pose2d goal;
+  private final PIDController xPid = new PIDController(0, 0, 0);
+  private final PIDController yPid = new PIDController(0, 0, 0);
+  private final PIDController thetaPid = new PIDController(0, 0, 0);
 
   /** Creates a new AutoDriveCommand. */
-  public AutoDriveCommand(SwerveSubsystem swerveSubsystem, DriveController controller) {
+  public AutoDriveCommand(SwerveSubsystem swerveSubsystem, Localization localization, Pose2d goal) {
     this.swerveSubsystem = swerveSubsystem;
-    this.controller = controller;
+    this.localization = localization;
+    this.goal = goal;
+    addRequirements(swerveSubsystem);
+
+    thetaPid.enableContinuousInput(-0.5, 0.5);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    xPid.setSetpoint(goal.getX());
+    yPid.setSetpoint(goal.getY());
+    thetaPid.setSetpoint(Units.radiansToRotations(goal.getRotation().getRadians()));
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    Pose2d currentPose = localization.getPose();
+    double xPercentage = xPid.calculate(currentPose.getX());
+    double yPercentage = yPid.calculate(currentPose.getY());
+    double thetaPercentage =
+        thetaPid.calculate(Units.radiansToRotations(currentPose.getRotation().getRadians()));
+
+    swerveSubsystem.driveTeleop(xPercentage, yPercentage, thetaPercentage, true);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    swerveSubsystem.driveTeleop(0, 0, 0, true);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    Transform2d error = goal.minus(localization.getPose());
+
+    return error.getX() < 0.1 && error.getY() < 0.1 && error.getRotation().getDegrees() < 5;
   }
 }
