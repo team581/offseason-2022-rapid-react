@@ -28,6 +28,7 @@ import frc.robot.queuer.QueuerSubsystem;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.superstructure.RobotIntakeMode;
 import frc.robot.superstructure.SuperstructureSubsystem;
+import frc.robot.superstructure.commands.AutoAimAndShoot;
 import frc.robot.superstructure.commands.AutoShooterCommand;
 import frc.robot.superstructure.commands.IntakeSubsystemCommand;
 import frc.robot.superstructure.commands.ManualShooterCommand;
@@ -126,7 +127,8 @@ public class RobotContainer {
         new IntakeSubsystemCommand(superStructure, RobotIntakeMode.INTAKING));
     driverController.leftBumper.whileActiveContinuous(
         new IntakeSubsystemCommand(superStructure, RobotIntakeMode.OUTTAKING));
-    driverController.rightTrigger.whileActiveContinuous(new AutoShooterCommand(superStructure));
+    driverController.rightTrigger.whileActiveContinuous(
+        new AutoShooterCommand(superStructure).alongWith(new AutoAimAndShoot(swerveSubsystem)));
     // operator controls
     operatorController.backButton.whenPressed(
         new HomeIntakeCommand(this.intakeSubsystem, superStructure));
