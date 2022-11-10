@@ -16,9 +16,9 @@ public class AutoDriveCommand extends CommandBase {
   private final SwerveSubsystem swerveSubsystem;
   private final Localization localization;
   private final Pose2d goal;
-  private final PIDController xPid = new PIDController(0, 0, 0);
-  private final PIDController yPid = new PIDController(0, 0, 0);
-  private final PIDController thetaPid = new PIDController(0, 0, 0);
+  private final PIDController xPid = new PIDController(0.1, 0, 0);
+  private final PIDController yPid = new PIDController(0.1, 0, 0);
+  private final PIDController thetaPid = new PIDController(0.1, 0, 0);
 
   /** Creates a new AutoDriveCommand. */
   public AutoDriveCommand(SwerveSubsystem swerveSubsystem, Localization localization, Pose2d goal) {

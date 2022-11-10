@@ -4,62 +4,79 @@
 
 package frc.robot.autonomous;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.autonomous.commands.AutoCenterTwoBallCommand;
+import frc.robot.autonomous.commands.AutoDoNothingCommand;
 
 public class AutonomousChooser {
-
+  private final RobotContainer robotContainer;
   private final SendableChooser<AutonomousSettings> autonomousModeChooser = new SendableChooser<>();
 
-  public AutonomousChooser() {
+  public AutonomousChooser(RobotContainer robotContainer) {
+    this.robotContainer = robotContainer;
     autonomousModeChooser.setDefaultOption("Do nothing", AutonomousSettings.DO_NOTHING);
     autonomousModeChooser.addOption("Red left two ball", AutonomousSettings.RED_LEFT_TWO_BALL);
     autonomousModeChooser.addOption("blue left two ball", AutonomousSettings.BLUE_LEFT_TWO_BALL);
     autonomousModeChooser.addOption("Red right two ball", AutonomousSettings.RED_RIGHT_TWO_BALL);
     autonomousModeChooser.addOption("blue right two ball", AutonomousSettings.BLUE_RIGHT_TWO_BALL);
     autonomousModeChooser.addOption("center two ball", AutonomousSettings.CENTER_TWO_BALL);
+    SmartDashboard.putData("Auto", autonomousModeChooser);
   }
 
-  public Command getAutonomousCommand(RobotContainer robotContainer) {
-    switch (autonomousModeChooser.getSelected(robotContainer)) {
-      case AutonomousSettings.DO_NOTHING:
+  public Command getAutonomousCommand() {
+    switch (autonomousModeChooser.getSelected()) {
+      case DO_NOTHING:
         return this.getDoNothingAuto(robotContainer);
-      case AutonomousSettings.RED_LEFT_TWO_BALL:
+      case RED_LEFT_TWO_BALL:
         return this.getRedLeftTwoBall(robotContainer);
-      case AutonomousSettings.BLUE_LEFT_TWO_BALL:
+      case BLUE_LEFT_TWO_BALL:
         return this.getBlueLeftTwoBall(robotContainer);
-      case AutonomousSettings.RED_RIGHT_TWO_BALL:
+      case RED_RIGHT_TWO_BALL:
         return this.getRedRightTwoBall(robotContainer);
-      case AutonomousSettings.BLUE_RIGHT_TWO_BALL:
+      case BLUE_RIGHT_TWO_BALL:
         return this.getBlueRightTwoBall(robotContainer);
-      case AutonomousSettings.CENTER_TWO_BALL:
+      case CENTER_TWO_BALL:
         return this.getCenterTwoBall(robotContainer);
     }
     return this.getDoNothingAuto(robotContainer);
   }
 
   private Command getDoNothingAuto(RobotContainer robotContainer) {
-    robotContainer.imuSubsystem.setAngle(AutonomousSettings.DO_NOTHING.zeroAngle);
+    robotContainer.localization.resetPose(new Pose2d(), AutonomousSettings.DO_NOTHING.zeroAngle);
+    return new AutoDoNothingCommand();
   }
 
   private Command getRedLeftTwoBall(RobotContainer robotContainer) {
-    robotContainer.imuSubsystem.setAngle(AutonomousSettings.RED_LEFT_TWO_BALL.zeroAngle);
+    robotContainer.localization.resetPose(
+        new Pose2d(), AutonomousSettings.RED_LEFT_TWO_BALL.zeroAngle);
+    return new AutoDoNothingCommand();
   }
 
   private Command getBlueLeftTwoBall(RobotContainer robotContainer) {
-    robotContainer.imuSubsystem.setAngle(AutonomousSettings.BLUE_LEFT_TWO_BALL.zeroAngle);
+    robotContainer.localization.resetPose(
+        new Pose2d(), AutonomousSettings.BLUE_LEFT_TWO_BALL.zeroAngle);
+    return new AutoDoNothingCommand();
   }
 
   private Command getRedRightTwoBall(RobotContainer robotContainer) {
-    robotContainer.imuSubsystem.setAngle(AutonomousSettings.RED_RIGHT_TWO_BALL.zeroAngle);
+    robotContainer.localization.resetPose(
+        new Pose2d(), AutonomousSettings.RED_RIGHT_TWO_BALL.zeroAngle);
+    return new AutoDoNothingCommand();
   }
 
   private Command getBlueRightTwoBall(RobotContainer robotContainer) {
-    robotContainer.imuSubsystem.setAngle(AutonomousSettings.BLUE_RIGHT_TWO_BALL.zeroAngle);
+    robotContainer.localization.resetPose(
+        new Pose2d(), AutonomousSettings.BLUE_RIGHT_TWO_BALL.zeroAngle);
+    return new AutoDoNothingCommand();
   }
 
   private Command getCenterTwoBall(RobotContainer robotContainer) {
-    robotContainer.imuSubsystem.setAngle(AutonomousSettings.CENTER_TWO_BALL.zeroAngle);
+    robotContainer.localization.resetPose(
+        new Pose2d(), AutonomousSettings.CENTER_TWO_BALL.zeroAngle);
+    return new AutoCenterTwoBallCommand(robotContainer);
   }
 }

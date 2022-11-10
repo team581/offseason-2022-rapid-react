@@ -17,11 +17,11 @@ import frc.robot.swerve.SwerveSubsystem;
 
 public class SuperstructureSubsystem extends SubsystemBase {
   private static final double MAX_ROBOT_SPEED_WHILE_SHOOTING = 1;
-  private final IntakeSubsystem intakeWrist;
-  private final IntakeRollersSubsystem intakeRollers;
-  private final QueuerSubsystem queuer;
-  private final ShooterSubsystem shooter;
-  private final SwerveSubsystem swerve;
+  public final IntakeSubsystem intakeWrist;
+  public final IntakeRollersSubsystem intakeRollers;
+  public final QueuerSubsystem queuer;
+  public final ShooterSubsystem shooter;
+  public final SwerveSubsystem swerve;
   private RobotIntakeMode intakeMode = RobotIntakeMode.STOPPED;
   private RobotShooterMode shooterMode = RobotShooterMode.STOPPED;
   private double savedRPM = 0;
