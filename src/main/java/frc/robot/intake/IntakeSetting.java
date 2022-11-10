@@ -6,7 +6,7 @@ package frc.robot.intake;
 
 public enum IntakeSetting {
   UP(-0.11, 0),
-  OUTTAKING(-0.44, 0),
+  OUTTAKING(-0.40, 0),
   INTAKING(-0.55, 0),
   STOWED(-0.05, 0),
   HOME(0, 2),
