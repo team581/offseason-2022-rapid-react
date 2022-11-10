@@ -40,7 +40,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     this.motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     this.motor.enableVoltageCompensation(voltageCompensationReference);
-    this.motor.setSmartCurrentLimit(30);
+    this.motor.setSmartCurrentLimit(25);
 
     this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 40);
     this.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 100);
