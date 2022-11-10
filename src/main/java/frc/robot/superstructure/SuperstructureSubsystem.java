@@ -44,8 +44,8 @@ public class SuperstructureSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // shooter logic
-    if (shooterMode == RobotShooterMode.MANUAL_SHOOT) {
-      this.savedRPM = 2400;
+    if (shooterMode == RobotShooterMode.MANUAL_WARMUP) {
+      this.savedRPM = 2300;
     } else if (shooterMode == RobotShooterMode.AUTO_SHOOT) {
       this.savedRPM = ShooterSubsystem.getRPMForAutoShoot();
     } else {
@@ -63,7 +63,7 @@ public class SuperstructureSubsystem extends SubsystemBase {
     }
 
     // queuer logic
-    if (shooterMode != RobotShooterMode.STOPPED && isAtRPM() && robotSpeedCanShoot()) {
+    if (shooterMode == RobotShooterMode.AUTO_SHOOT && isAtRPM() && robotSpeedCanShoot()) {
       this.queuer.setMode(QueuerMode.SHOOT);
       this.intakeRollers.setMode(IntakeRollersMode.INTAKING);
     } else if (intakeMode == RobotIntakeMode.INTAKING) {
@@ -95,7 +95,10 @@ public class SuperstructureSubsystem extends SubsystemBase {
   }
 
   public void setShooterMode(RobotShooterMode shooterMode) {
-    this.shooterMode = shooterMode;
+    if (!(shooterMode == RobotShooterMode.MANUAL_WARMUP
+        && this.shooterMode == RobotShooterMode.AUTO_SHOOT)) {
+      this.shooterMode = shooterMode;
+    }
   }
 
   public void isIntakeHoming(boolean isHoming) {

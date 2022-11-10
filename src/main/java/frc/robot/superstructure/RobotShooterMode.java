@@ -6,6 +6,6 @@ package frc.robot.superstructure;
 
 public enum RobotShooterMode {
   AUTO_SHOOT,
-  MANUAL_SHOOT,
+  MANUAL_WARMUP,
   STOPPED;
 }

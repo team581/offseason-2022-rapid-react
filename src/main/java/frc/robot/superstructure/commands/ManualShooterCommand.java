@@ -19,14 +19,14 @@ public class ManualShooterCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.superStructure.setShooterMode(RobotShooterMode.MANUAL_SHOOT);
+    this.superStructure.setShooterMode(RobotShooterMode.MANUAL_WARMUP);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    this.superStructure.setShooterMode(RobotShooterMode.MANUAL_SHOOT);
+    this.superStructure.setShooterMode(RobotShooterMode.MANUAL_WARMUP);
   }
 
   // Called once the command ends or is interrupted.
