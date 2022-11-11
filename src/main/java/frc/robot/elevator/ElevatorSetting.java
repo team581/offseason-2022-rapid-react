@@ -10,6 +10,7 @@ public enum ElevatorSetting {
   LATCHED(10);
 
   public final double height;
+
   private ElevatorSetting(double height) {
     this.height = height;
   }

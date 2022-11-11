@@ -12,14 +12,13 @@ public class HomeElevatorCommand extends CommandBase {
   private final ElevatorSubsystem elevator;
   /** Creates a new HomeElevatorCommand. */
   public HomeElevatorCommand(ElevatorSubsystem elevator) {
-    this.elevator=elevator;
+    this.elevator = elevator;
     addRequirements(elevator);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

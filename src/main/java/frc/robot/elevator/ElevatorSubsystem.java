@@ -9,7 +9,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.elevator.commands.ElevatorGoToPosition;
 import frc.robot.misc.util.GearingConverter;
 import frc.robot.misc.util.sensors.SensorUnitConverter;
 
@@ -20,7 +19,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   private static GearingConverter GEARING = GearingConverter.fromReduction(60);
   private static double HEIGHT_TOLERANCE = 1;
   private static final double HOMED_CURRENT = 15;
-
 
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem(TalonFX motor) {
@@ -38,7 +36,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Elevator Height (inch)", getHeight());
-
   }
 
   public void setPercent(double percent) {
@@ -79,7 +76,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     return Math.abs(getHeight() - position.height) < HEIGHT_TOLERANCE;
   }
 
-  public boolean isHomed(){
+  public boolean isHomed() {
     return this.getCurrent() > HOMED_CURRENT;
   }
 }

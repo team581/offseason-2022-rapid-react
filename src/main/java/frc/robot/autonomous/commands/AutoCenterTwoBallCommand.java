@@ -20,8 +20,7 @@ public class AutoCenterTwoBallCommand extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     // TODO(jonah): inline this
-    addRequirements(robotContainer
-    .swerveSubsystem);
+    addRequirements(robotContainer.swerveSubsystem);
     addCommands(
         new AutoDriveCommand(
             robotContainer.swerveSubsystem,
