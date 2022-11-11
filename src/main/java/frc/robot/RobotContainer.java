@@ -7,11 +7,15 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.autonomous.AutonomousChooser;
 import frc.robot.controller.ButtonController;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSetting;
@@ -20,12 +24,24 @@ import frc.robot.elevator.commands.ElevatorGoToPosition;
 import frc.robot.elevator.commands.ElevatorSetPercent;
 import frc.robot.elevator.commands.HomeElevatorCommand;
 import frc.robot.example.ExampleSubsystem;
-import frc.robot.example.commands.ExampleCommand;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.intake.IntakeSetting;
+import frc.robot.intake.IntakeSubsystem;
+import frc.robot.intake.commands.HomeIntakeCommand;
+import frc.robot.intake_rollers.IntakeRollersSubsystem;
 import frc.robot.localization.Localization;
+import frc.robot.queuer.QueuerSubsystem;
+import frc.robot.shooter.ShooterSubsystem;
+import frc.robot.superstructure.RobotIntakeMode;
+import frc.robot.superstructure.SuperstructureSubsystem;
+import frc.robot.superstructure.commands.AutoAimAndShoot;
+import frc.robot.superstructure.commands.IntakeSubsystemCommand;
+import frc.robot.superstructure.commands.ManualShooterCommand;
+import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveModuleConstants;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.swerve.commands.TeleopDriveCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,43 +51,70 @@ import frc.robot.swerve.SwerveSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveController driverController =
-      new DriveController(Constants.DRIVER_CONTROLLER_PORT);
-  private final ButtonController copilotController =
-      new ButtonController(Constants.COPILOT_CONTROLLER_PORT);
+  public final DriveController driverController =
+      new DriveController(new XboxController(Constants.DRIVER_CONTROLLER_PORT));
+  private final ButtonController operatorController =
+      new ButtonController(new XboxController(Constants.OPERATOR_CONTROLLER_PORT));
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
-  private final SwerveSubsystem swerveSubsystem =
+  public final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
+  private final IntakeRollersSubsystem intakeRollersSubsystem =
+      new IntakeRollersSubsystem(new CANSparkMax(15, MotorType.kBrushless));
+  private final IntakeSubsystem intakeSubsystem =
+      new IntakeSubsystem(new CANSparkMax(16, MotorType.kBrushless));
+  private final QueuerSubsystem queuerSubsystem =
+      new QueuerSubsystem(new CANSparkMax(17, MotorType.kBrushless), new DigitalInput(0));
+  private final ShooterSubsystem shooterSubsystem =
+      new ShooterSubsystem(new CANSparkMax(18, MotorType.kBrushless));
+  public final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(
           imuSubsystem,
           driverController,
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d()),
+              new SwerveModuleConstants(
+                  Rotation2d.fromDegrees(104.6), SwerveCorner.FRONT_LEFT, false, false),
               new TalonFX(2),
               new TalonFX(3),
               new CANCoder(10)),
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d()),
+              new SwerveModuleConstants(
+                  Rotation2d.fromDegrees(78.95), SwerveCorner.FRONT_RIGHT, false, false),
               new TalonFX(4),
               new TalonFX(5),
               new CANCoder(11)),
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d()),
+              new SwerveModuleConstants(
+                  Rotation2d.fromDegrees(-148), SwerveCorner.BACK_LEFT, false, false),
               new TalonFX(6),
               new TalonFX(7),
               new CANCoder(12)),
           new SwerveModule(
-              new SwerveModuleConstants(new Rotation2d()),
+              new SwerveModuleConstants(
+                  Rotation2d.fromDegrees(-62.53), SwerveCorner.BACK_RIGHT, false, false),
               new TalonFX(8),
               new TalonFX(9),
               new CANCoder(13)));
-  private final Localization localization = new Localization(swerveSubsystem, imuSubsystem);
+  public final Localization localization = new Localization(swerveSubsystem, imuSubsystem);
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(new TalonFX(14));
-
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  public final SuperstructureSubsystem superstructure =
+      new SuperstructureSubsystem(
+          intakeSubsystem,
+          intakeRollersSubsystem,
+          queuerSubsystem,
+          shooterSubsystem,
+          swerveSubsystem);
+  public final AutonomousChooser autonomousChooser = new AutonomousChooser(this);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    this.swerveSubsystem.setDefaultCommand(
+        new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
+
+    // TODO: Try doing sequentual(ShooterCommand, parallel(QueuerCommand.perpetually(),
+    // ShooterCommand.perpetually()))
+    // this.shooterSubsystem.setDefaultCommand(
+    // new ShooterCommand(this.shooterSubsystem, 0).perpetually());
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -83,16 +126,32 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    // driver controls
     driverController
         .rightBumper
         .whenPressed(new ElevatorGoToPosition(elevatorSubsystem, ElevatorSetting.DEPLOYED))
         .whenReleased(new ElevatorGoToPosition(elevatorSubsystem, ElevatorSetting.LATCHED));
-    new Trigger(() -> copilotController.getRightY() > 0.5)
+    new Trigger(() -> operatorController.getRightY() > 0.5)
         .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.15));
-    new Trigger(() -> copilotController.getRightY() < -0.5)
+    new Trigger(() -> operatorController.getRightY() < -0.5)
         .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.15));
-    copilotController.startButton.whenPressed(
-        new HomeElevatorCommand(elevatorSubsystem));
+    this.driverController.startButton.whenPressed(() -> this.imuSubsystem.zero());
+    driverController.leftTrigger.whileActiveContinuous(
+        new IntakeSubsystemCommand(superstructure, RobotIntakeMode.INTAKING));
+    driverController.leftBumper.whileActiveContinuous(
+        new IntakeSubsystemCommand(superstructure, RobotIntakeMode.OUTTAKING));
+    driverController.rightTrigger.whileActiveContinuous(
+        new AutoAimAndShoot(superstructure, driverController));
+    // operator controls
+    operatorController.startButton.whenPressed(new HomeElevatorCommand(elevatorSubsystem));
+    operatorController.backButton.whenPressed(
+        new HomeIntakeCommand(this.intakeSubsystem, superstructure));
+    operatorController.leftTrigger.whileActiveContinuous(
+        () -> this.superstructure.setIntakePosition(IntakeSetting.INTAKING));
+    operatorController.leftBumper.whileActiveContinuous(
+        () -> this.superstructure.setIntakePosition(IntakeSetting.UP));
+    operatorController.rightTrigger.whileActiveContinuous(new ManualShooterCommand(superstructure));
   }
 
   /**
@@ -101,7 +160,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return autonomousChooser.getAutonomousCommand();
   }
 }

@@ -5,6 +5,7 @@
 package frc.robot.localization;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.imu.ImuSubsystem;
@@ -36,5 +37,9 @@ public class Localization extends SubsystemBase {
 
   public Pose2d getPose() {
     return odometry.getPoseMeters();
+  }
+
+  public void resetPose(Pose2d pose, Rotation2d gyroAngle) {
+    odometry.resetPosition(pose, gyroAngle);
   }
 }

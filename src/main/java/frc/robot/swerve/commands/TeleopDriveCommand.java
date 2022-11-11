@@ -33,21 +33,11 @@ public class TeleopDriveCommand extends CommandBase {
       return;
     }
 
-    final var slowMode = controller.leftTrigger.get();
-    final var robotRelative = controller.rightTrigger.get();
-
     var sidewaysPercentage = controller.getSidewaysPercentage();
     var forwardPercentage = controller.getForwardPercentage();
     var thetaPercentage = controller.getThetaPercentage();
 
-    if (slowMode) {
-      sidewaysPercentage *= 0.5;
-      forwardPercentage *= 0.5;
-      thetaPercentage *= 0.5;
-    }
-
-    swerveSubsystem.driveTeleop(
-        sidewaysPercentage, -forwardPercentage, thetaPercentage, !robotRelative);
+    swerveSubsystem.driveTeleop(sidewaysPercentage, -forwardPercentage, thetaPercentage, true);
   }
 
   // Called once the command ends or is interrupted.
