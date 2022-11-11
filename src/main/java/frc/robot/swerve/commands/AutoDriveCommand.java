@@ -16,9 +16,9 @@ public class AutoDriveCommand extends CommandBase {
   private final SwerveSubsystem swerveSubsystem;
   private final Localization localization;
   private final Pose2d goal;
-  private final PIDController xPid = new PIDController(0.1, 0, 0);
-  private final PIDController yPid = new PIDController(0.1, 0, 0);
-  private final PIDController thetaPid = new PIDController(0.1, 0, 0);
+  private final PIDController xPid = new PIDController(0.01, 0, 0);
+  private final PIDController yPid = new PIDController(0.01, 0, 0);
+  private final PIDController thetaPid = new PIDController(1, 0, 0);
 
   /** Creates a new AutoDriveCommand. */
   public AutoDriveCommand(SwerveSubsystem swerveSubsystem, Localization localization, Pose2d goal) {
@@ -43,10 +43,28 @@ public class AutoDriveCommand extends CommandBase {
   @Override
   public void execute() {
     Pose2d currentPose = localization.getPose();
-    double xPercentage = xPid.calculate(currentPose.getX());
-    double yPercentage = yPid.calculate(currentPose.getY());
+    double xPercentage = -xPid.calculate(currentPose.getX());
+    double yPercentage = -yPid.calculate(currentPose.getY());
     double thetaPercentage =
-        thetaPid.calculate(Units.radiansToRotations(currentPose.getRotation().getRadians()));
+        -thetaPid.calculate(Units.radiansToRotations(currentPose.getRotation().getRadians()));
+
+    if (xPercentage > 0.5) {
+      xPercentage = 0.5;
+    } else if (xPercentage < -0.5) {
+      xPercentage = -0.5;
+    }
+
+    if (yPercentage > 0.5) {
+      yPercentage = 0.5;
+    } else if (yPercentage < -0.5) {
+      yPercentage = -0.5;
+    }
+
+    if (thetaPercentage > 1) {
+      thetaPercentage = 1;
+    } else if (thetaPercentage < -1) {
+      thetaPercentage = -1;
+    }
 
     swerveSubsystem.driveTeleop(xPercentage, yPercentage, thetaPercentage, true);
   }
@@ -62,6 +80,8 @@ public class AutoDriveCommand extends CommandBase {
   public boolean isFinished() {
     Transform2d error = goal.minus(localization.getPose());
 
-    return error.getX() < 0.1 && error.getY() < 0.1 && error.getRotation().getDegrees() < 5;
+    return Math.abs(error.getX()) < 0.1
+        && Math.abs(error.getY()) < 0.1
+        && Math.abs(error.getRotation().getDegrees()) < 5;
   }
 }
