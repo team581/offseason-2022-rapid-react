@@ -5,6 +5,7 @@
 package frc.robot.superstructure;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.intake.IntakeSetting;
 import frc.robot.intake.IntakeSubsystem;
@@ -17,6 +18,7 @@ import frc.robot.swerve.SwerveSubsystem;
 
 public class SuperstructureSubsystem extends SubsystemBase {
   private static final double MAX_ROBOT_SPEED_WHILE_SHOOTING = 1;
+  private static final double MAX_ROBOT_ROTATION_WHILE_SHOOTING = Units.degreesToRotations(10);
   public final IntakeSubsystem intakeWrist;
   public final IntakeRollersSubsystem intakeRollers;
   public final QueuerSubsystem queuer;
@@ -112,6 +114,7 @@ public class SuperstructureSubsystem extends SubsystemBase {
   private boolean robotSpeedCanShoot() {
     ChassisSpeeds speed = swerve.getChassisSpeeds();
     return speed.vxMetersPerSecond < MAX_ROBOT_SPEED_WHILE_SHOOTING
-        && speed.vyMetersPerSecond < MAX_ROBOT_SPEED_WHILE_SHOOTING;
+        && speed.vyMetersPerSecond < MAX_ROBOT_SPEED_WHILE_SHOOTING
+        && speed.omegaRadiansPerSecond < MAX_ROBOT_ROTATION_WHILE_SHOOTING;
   }
 }
