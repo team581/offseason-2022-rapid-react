@@ -52,11 +52,16 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
+    ChassisSpeeds speeds = getChassisSpeeds();
     this.frontLeft.logValues();
     this.frontRight.logValues();
     this.backLeft.logValues();
     this.backRight.logValues();
+
+    SmartDashboard.putNumber("Swerve/Rotational velocity", speeds.omegaRadiansPerSecond);
+    SmartDashboard.putNumber("Swerve/Forward velocity", speeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Swerve/Horizontal velocity", speeds.vyMetersPerSecond);
+
   }
 
   public ChassisSpeeds getChassisSpeeds() {
