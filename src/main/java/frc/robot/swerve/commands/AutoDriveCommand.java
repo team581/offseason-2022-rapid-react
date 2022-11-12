@@ -45,7 +45,7 @@ public class AutoDriveCommand extends CommandBase {
   @Override
   public void execute() {
     swerveSubsystem.driveTeleop(
-        sidewaysPercentage, -forwardPercentage, thetaPercentage, fieldRelative);
+        sidewaysPercentage, forwardPercentage, thetaPercentage, fieldRelative);
   }
 
   // Called once the command ends or is interrupted.
