@@ -49,7 +49,7 @@ public class AutonomousChooser {
     robotContainer.localization.resetPose(
         new Pose2d(), AutonomousSettings.BLUE_LEFT_TWO_BALL.zeroAngle);
     return new HomeIntakeCommand(robotContainer.intakeSubsystem, robotContainer.superstructure)
-        .andThen(new AutoDriveCommand(robotContainer.swerveSubsystem, 0, -0.35, 0, false, 3))
+        .andThen(new AutoDriveCommand(robotContainer.swerveSubsystem, 0, -0.35, 0, false, 1.5))
         .andThen(
             new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
                 .withTimeout(6));
@@ -59,7 +59,7 @@ public class AutonomousChooser {
     robotContainer.localization.resetPose(
         new Pose2d(), AutonomousSettings.BLUE_RIGHT_TWO_BALL.zeroAngle);
     return new HomeIntakeCommand(robotContainer.intakeSubsystem, robotContainer.superstructure)
-        .andThen(new AutoDriveCommand(robotContainer.swerveSubsystem, 0, -0.35, 0, false, 2))
+        .andThen(new AutoDriveCommand(robotContainer.swerveSubsystem, 0, -0.35, 0, false, 1.5))
         .andThen(
             new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
                 .withTimeout(6));
@@ -69,7 +69,7 @@ public class AutonomousChooser {
     robotContainer.localization.resetPose(
         new Pose2d(), AutonomousSettings.CENTER_TWO_BALL.zeroAngle);
     return new HomeIntakeCommand(robotContainer.intakeSubsystem, robotContainer.superstructure)
-        .andThen(new AutoDriveCommand(robotContainer.swerveSubsystem, 0, -0.35, 0, false, 3))
+        .andThen(new AutoDriveCommand(robotContainer.swerveSubsystem, 0, -0.35, 0, false, 1.5))
         .andThen(
             new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
                 .withTimeout(6));
