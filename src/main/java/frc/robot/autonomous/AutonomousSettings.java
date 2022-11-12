@@ -8,10 +8,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public enum AutonomousSettings {
   DO_NOTHING(0),
-  RED_LEFT_TWO_BALL(45),
-  BLUE_LEFT_TWO_BALL(45),
-  RED_RIGHT_TWO_BALL(315),
-  BLUE_RIGHT_TWO_BALL(315),
+  BLUE_LEFT_TWO_BALL(32),
+  BLUE_RIGHT_TWO_BALL(280),
   CENTER_TWO_BALL(0);
   public final Rotation2d zeroAngle;
 

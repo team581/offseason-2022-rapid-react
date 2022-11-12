@@ -21,7 +21,6 @@ import frc.robot.elevator.ElevatorSetting;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.commands.ElevatorGoToPosition;
 import frc.robot.elevator.commands.ElevatorSetPercent;
-import frc.robot.elevator.commands.HomeElevatorCommand;
 import frc.robot.example.ExampleSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.IntakeSetting;
@@ -58,7 +57,7 @@ public class RobotContainer {
   public final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
   private final IntakeRollersSubsystem intakeRollersSubsystem =
       new IntakeRollersSubsystem(new CANSparkMax(15, MotorType.kBrushless));
-  private final IntakeSubsystem intakeSubsystem =
+  public final IntakeSubsystem intakeSubsystem =
       new IntakeSubsystem(new CANSparkMax(16, MotorType.kBrushless));
   private final QueuerSubsystem queuerSubsystem =
       new QueuerSubsystem(new CANSparkMax(17, MotorType.kBrushless), new DigitalInput(0));
@@ -93,7 +92,7 @@ public class RobotContainer {
               new TalonFX(9),
               new CANCoder(13)));
   public final Localization localization = new Localization(swerveSubsystem, imuSubsystem);
-  private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(new TalonFX(14));
+  public final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(new TalonFX(14));
   public final SuperstructureSubsystem superstructure =
       new SuperstructureSubsystem(
           intakeSubsystem,
@@ -148,7 +147,6 @@ public class RobotContainer {
     //     .whileActiveContinuous(new ElevatorSetPercent(elevatorSubsystem, 0.15));
     // new Trigger(() -> operatorController.getRightY() < -0.5)
     //     .whileActiveContinuous(new ElevatorSetPercent(elevatorSubsystem, -0.15));
-    operatorController.startButton.whenPressed(new HomeElevatorCommand(elevatorSubsystem));
     operatorController.backButton.whenPressed(
         new HomeIntakeCommand(this.intakeSubsystem, superstructure));
     operatorController.leftTrigger.whileActiveContinuous(
