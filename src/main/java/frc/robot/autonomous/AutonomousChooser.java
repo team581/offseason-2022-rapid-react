@@ -52,7 +52,7 @@ public class AutonomousChooser {
         .andThen(new AutoDriveCommand(robotContainer.swerveSubsystem, 0, -0.35, 0, false, 3))
         .andThen(
             new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
-                .withTimeout(3));
+                .withTimeout(6));
   }
 
   private Command getBlueRightTwoBall(RobotContainer robotContainer) {
@@ -62,7 +62,7 @@ public class AutonomousChooser {
         .andThen(new AutoDriveCommand(robotContainer.swerveSubsystem, 0, -0.35, 0, false, 2))
         .andThen(
             new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
-                .withTimeout(3));
+                .withTimeout(6));
   }
 
   private Command getCenterTwoBall(RobotContainer robotContainer) {
@@ -72,6 +72,6 @@ public class AutonomousChooser {
         .andThen(new AutoDriveCommand(robotContainer.swerveSubsystem, 0, -0.35, 0, false, 3))
         .andThen(
             new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
-                .withTimeout(3));
+                .withTimeout(6));
   }
 }
