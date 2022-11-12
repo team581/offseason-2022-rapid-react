@@ -14,9 +14,15 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autonomous.AutonomousChooser;
 import frc.robot.controller.ButtonController;
 import frc.robot.controller.DriveController;
+import frc.robot.elevator.ElevatorSetting;
+import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.elevator.commands.ElevatorGoToPosition;
+import frc.robot.elevator.commands.ElevatorSetPercent;
+import frc.robot.elevator.commands.HomeElevatorCommand;
 import frc.robot.example.ExampleSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.IntakeSetting;
@@ -46,9 +52,9 @@ import frc.robot.swerve.commands.TeleopDriveCommand;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final DriveController driverController =
-      new DriveController(new XboxController(Constants.DRIVER_CONTROLLER_PORT));
+      new DriveController(Constants.DRIVER_CONTROLLER_PORT);
   private final ButtonController operatorController =
-      new ButtonController(new XboxController(Constants.OPERATOR_CONTROLLER_PORT));
+      new ButtonController(Constants.OPERATOR_CONTROLLER_PORT);
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
   private final IntakeRollersSubsystem intakeRollersSubsystem =
@@ -88,6 +94,7 @@ public class RobotContainer {
               new TalonFX(9),
               new CANCoder(13)));
   public final Localization localization = new Localization(swerveSubsystem, imuSubsystem);
+  private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(new TalonFX(14));
   public final SuperstructureSubsystem superstructure =
       new SuperstructureSubsystem(
           intakeSubsystem,
@@ -119,7 +126,19 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
     // driver controls
+    driverController
+        .rightBumper
+        .whenPressed(new ElevatorGoToPosition(elevatorSubsystem, ElevatorSetting.DEPLOYED))
+        .whenReleased(new ElevatorGoToPosition(elevatorSubsystem, ElevatorSetting.LATCHED));
+    new Trigger(() -> operatorController.getRightY() > 0.5)
+        .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.5));
+    new Trigger(() -> operatorController.getRightY() < -0.5)
+        .whenActive(new ElevatorSetPercent(elevatorSubsystem, -0.5));
+    new Trigger(
+            () -> operatorController.getRightY() < 0.15 && operatorController.getRightY() > -0.15)
+        .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0));
     this.driverController.startButton.whenPressed(() -> this.imuSubsystem.zero());
     driverController.leftTrigger.whileActiveContinuous(
         new IntakeSubsystemCommand(superstructure, RobotIntakeMode.INTAKING));
@@ -128,6 +147,7 @@ public class RobotContainer {
     driverController.rightTrigger.whileActiveContinuous(
         new AutoAimAndShoot(superstructure, driverController));
     // operator controls
+    operatorController.startButton.whenPressed(new HomeElevatorCommand(elevatorSubsystem));
     operatorController.backButton.whenPressed(
         new HomeIntakeCommand(this.intakeSubsystem, superstructure));
     operatorController.leftTrigger.whileActiveContinuous(
