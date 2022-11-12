@@ -5,12 +5,16 @@
 package frc.robot.autonomous;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.autonomous.commands.AutoCenterTwoBallCommand;
 import frc.robot.autonomous.commands.AutoDoNothingCommand;
+import frc.robot.superstructure.RobotIntakeMode;
+import frc.robot.superstructure.commands.AutoAimAndShoot;
+import frc.robot.superstructure.commands.IntakeSubsystemCommand;
+import frc.robot.swerve.commands.AutoDriveCommand;
 
 public class AutonomousChooser {
   private final RobotContainer robotContainer;
@@ -53,30 +57,124 @@ public class AutonomousChooser {
   private Command getRedLeftTwoBall(RobotContainer robotContainer) {
     robotContainer.localization.resetPose(
         new Pose2d(), AutonomousSettings.RED_LEFT_TWO_BALL.zeroAngle);
-    return new AutoDoNothingCommand();
+    return new AutoDriveCommand(
+            robotContainer.swerveSubsystem,
+            robotContainer.localization,
+            new Pose2d(-2, 0, new Rotation2d()))
+        .andThen(
+            new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
+                .withTimeout(7))
+        .andThen(
+            new AutoDriveCommand(
+                robotContainer.swerveSubsystem,
+                robotContainer.localization,
+                new Pose2d(-3, 2, new Rotation2d())))
+        .alongWith(
+            new IntakeSubsystemCommand(robotContainer.superstructure, RobotIntakeMode.INTAKING)
+                .withTimeout(5))
+        .andThen(
+            new AutoDriveCommand(
+                robotContainer.swerveSubsystem,
+                robotContainer.localization,
+                new Pose2d(-2, 0, new Rotation2d())))
+        .andThen(
+            new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
+                .withTimeout(7));
   }
 
   private Command getBlueLeftTwoBall(RobotContainer robotContainer) {
     robotContainer.localization.resetPose(
         new Pose2d(), AutonomousSettings.BLUE_LEFT_TWO_BALL.zeroAngle);
-    return new AutoDoNothingCommand();
+    return new AutoDriveCommand(
+            robotContainer.swerveSubsystem,
+            robotContainer.localization,
+            new Pose2d(-2, 0, new Rotation2d()))
+        .andThen(
+            new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
+                .withTimeout(7))
+        .andThen(
+            new AutoDriveCommand(
+                robotContainer.swerveSubsystem,
+                robotContainer.localization,
+                new Pose2d(-3, 2, new Rotation2d())))
+        .alongWith(
+            new IntakeSubsystemCommand(robotContainer.superstructure, RobotIntakeMode.INTAKING)
+                .withTimeout(5))
+        .andThen(
+            new AutoDriveCommand(
+                robotContainer.swerveSubsystem,
+                robotContainer.localization,
+                new Pose2d(-2, 0, new Rotation2d())))
+        .andThen(
+            new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
+                .withTimeout(7));
   }
 
   private Command getRedRightTwoBall(RobotContainer robotContainer) {
     robotContainer.localization.resetPose(
         new Pose2d(), AutonomousSettings.RED_RIGHT_TWO_BALL.zeroAngle);
-    return new AutoDoNothingCommand();
+    return new AutoDriveCommand(
+            robotContainer.swerveSubsystem,
+            robotContainer.localization,
+            new Pose2d(-2, 0, new Rotation2d()))
+        .andThen(
+            new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
+                .withTimeout(7))
+        .andThen(
+            new AutoDriveCommand(
+                robotContainer.swerveSubsystem,
+                robotContainer.localization,
+                new Pose2d(-4, 4, new Rotation2d())))
+        .alongWith(
+            new IntakeSubsystemCommand(robotContainer.superstructure, RobotIntakeMode.INTAKING)
+                .withTimeout(5))
+        .andThen(
+            new AutoDriveCommand(
+                robotContainer.swerveSubsystem,
+                robotContainer.localization,
+                new Pose2d(-2, 0, new Rotation2d())))
+        .andThen(
+            new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
+                .withTimeout(7));
   }
 
   private Command getBlueRightTwoBall(RobotContainer robotContainer) {
     robotContainer.localization.resetPose(
         new Pose2d(), AutonomousSettings.BLUE_RIGHT_TWO_BALL.zeroAngle);
-    return new AutoDoNothingCommand();
+    return new AutoDriveCommand(
+            robotContainer.swerveSubsystem,
+            robotContainer.localization,
+            new Pose2d(-2, 0, new Rotation2d()))
+        .andThen(
+            new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
+                .withTimeout(7))
+        .andThen(
+            new AutoDriveCommand(
+                robotContainer.swerveSubsystem,
+                robotContainer.localization,
+                new Pose2d(-4, 4, new Rotation2d())))
+        .alongWith(
+            new IntakeSubsystemCommand(robotContainer.superstructure, RobotIntakeMode.INTAKING)
+                .withTimeout(5))
+        .andThen(
+            new AutoDriveCommand(
+                robotContainer.swerveSubsystem,
+                robotContainer.localization,
+                new Pose2d(-2, 0, new Rotation2d())))
+        .andThen(
+            new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
+                .withTimeout(7));
   }
 
   private Command getCenterTwoBall(RobotContainer robotContainer) {
     robotContainer.localization.resetPose(
         new Pose2d(), AutonomousSettings.CENTER_TWO_BALL.zeroAngle);
-    return new AutoCenterTwoBallCommand(robotContainer);
+    return new AutoDriveCommand(
+            robotContainer.swerveSubsystem,
+            robotContainer.localization,
+            new Pose2d(0, -24, AutonomousSettings.CENTER_TWO_BALL.zeroAngle))
+        .andThen(
+            new AutoAimAndShoot(robotContainer.superstructure, robotContainer.driverController)
+                .withTimeout(3));
   }
 }

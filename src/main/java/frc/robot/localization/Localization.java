@@ -7,6 +7,7 @@ package frc.robot.localization;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
@@ -33,6 +34,11 @@ public class Localization extends SubsystemBase {
     final var moduleStates = swerve.getModuleStates();
 
     odometry.update(heading, moduleStates);
+
+    Pose2d currPose2d = getPose();
+    SmartDashboard.putNumber("Pose/x", currPose2d.getX());
+    SmartDashboard.putNumber("Pose/y", currPose2d.getY());
+    SmartDashboard.putNumber("Pose/angle", currPose2d.getRotation().getDegrees());
   }
 
   public Pose2d getPose() {
@@ -40,6 +46,7 @@ public class Localization extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose, Rotation2d gyroAngle) {
-    odometry.resetPosition(pose, gyroAngle);
+    imu.setAngle(gyroAngle.getDegrees());
+    odometry.resetPosition(pose, getPose().getRotation());
   }
 }
