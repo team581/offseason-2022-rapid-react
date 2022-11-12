@@ -55,7 +55,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     distanceToRPM.put(-4.78, 2600.0);
     distanceToRPM.put(-5.4, 2600.0);
-    distanceToRPM.put(-20.1, 3500.0);
+    distanceToRPM.put(-20.1, 3300.0);
   }
 
   public double getRPM() {
