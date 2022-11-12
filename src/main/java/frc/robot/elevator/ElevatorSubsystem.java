@@ -30,6 +30,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     motor.configMotionAcceleration(0);
     motor.configMotionCruiseVelocity(0);
     motor.configClosedloopRamp(0);
+    motor.setInverted(true);
   }
 
   @Override

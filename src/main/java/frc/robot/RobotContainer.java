@@ -52,9 +52,9 @@ import frc.robot.swerve.commands.TeleopDriveCommand;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final DriveController driverController =
-      new DriveController(new XboxController(Constants.DRIVER_CONTROLLER_PORT));
+      new DriveController(Constants.DRIVER_CONTROLLER_PORT);
   private final ButtonController operatorController =
-      new ButtonController(new XboxController(Constants.OPERATOR_CONTROLLER_PORT));
+      new ButtonController(Constants.OPERATOR_CONTROLLER_PORT);
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
   private final IntakeRollersSubsystem intakeRollersSubsystem =
@@ -133,9 +133,11 @@ public class RobotContainer {
         .whenPressed(new ElevatorGoToPosition(elevatorSubsystem, ElevatorSetting.DEPLOYED))
         .whenReleased(new ElevatorGoToPosition(elevatorSubsystem, ElevatorSetting.LATCHED));
     new Trigger(() -> operatorController.getRightY() > 0.5)
-        .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.15));
+        .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.5));
     new Trigger(() -> operatorController.getRightY() < -0.5)
-        .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.15));
+        .whenActive(new ElevatorSetPercent(elevatorSubsystem, -0.5));
+    new Trigger(() -> operatorController.getRightY() < 0.15 && operatorController.getRightY() > -0.15)
+        .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0));
     this.driverController.startButton.whenPressed(() -> this.imuSubsystem.zero());
     driverController.leftTrigger.whileActiveContinuous(
         new IntakeSubsystemCommand(superstructure, RobotIntakeMode.INTAKING));
