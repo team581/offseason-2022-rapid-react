@@ -53,8 +53,8 @@ public class ShooterSubsystem extends SubsystemBase {
     this.pid.setFF(0.00023);
     this.pid.setOutputRange(0, 1);
 
-    distanceToRPM.put(-4.78, 2400.0);
-    distanceToRPM.put(-5.4, 2500.0);
+    distanceToRPM.put(-4.78, 2600.0);
+    distanceToRPM.put(-5.4, 2600.0);
     distanceToRPM.put(-20.1, 3500.0);
   }
 

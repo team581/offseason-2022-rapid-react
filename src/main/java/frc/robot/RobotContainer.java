@@ -14,10 +14,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.autonomous.AutonomousChooser;
 import frc.robot.controller.ButtonController;
 import frc.robot.controller.DriveController;
 import frc.robot.example.ExampleSubsystem;
-import frc.robot.example.commands.ExampleCommand;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.IntakeSetting;
 import frc.robot.intake.IntakeSubsystem;
@@ -29,7 +29,6 @@ import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.superstructure.RobotIntakeMode;
 import frc.robot.superstructure.SuperstructureSubsystem;
 import frc.robot.superstructure.commands.AutoAimAndShoot;
-import frc.robot.superstructure.commands.AutoShooterCommand;
 import frc.robot.superstructure.commands.IntakeSubsystemCommand;
 import frc.robot.superstructure.commands.ManualShooterCommand;
 import frc.robot.swerve.SwerveCorner;
@@ -46,12 +45,12 @@ import frc.robot.swerve.commands.TeleopDriveCommand;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveController driverController =
+  public final DriveController driverController =
       new DriveController(new XboxController(Constants.DRIVER_CONTROLLER_PORT));
   private final ButtonController operatorController =
       new ButtonController(new XboxController(Constants.OPERATOR_CONTROLLER_PORT));
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
+  public final ImuSubsystem imuSubsystem = new ImuSubsystem(new Pigeon2(1));
   private final IntakeRollersSubsystem intakeRollersSubsystem =
       new IntakeRollersSubsystem(new CANSparkMax(15, MotorType.kBrushless));
   private final IntakeSubsystem intakeSubsystem =
@@ -60,7 +59,7 @@ public class RobotContainer {
       new QueuerSubsystem(new CANSparkMax(17, MotorType.kBrushless), new DigitalInput(0));
   private final ShooterSubsystem shooterSubsystem =
       new ShooterSubsystem(new CANSparkMax(18, MotorType.kBrushless));
-  private final SwerveSubsystem swerveSubsystem =
+  public final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(
           imuSubsystem,
           driverController,
@@ -88,16 +87,15 @@ public class RobotContainer {
               new TalonFX(8),
               new TalonFX(9),
               new CANCoder(13)));
-  private final Localization localization = new Localization(swerveSubsystem, imuSubsystem);
-  private final SuperstructureSubsystem superStructure =
+  public final Localization localization = new Localization(swerveSubsystem, imuSubsystem);
+  public final SuperstructureSubsystem superstructure =
       new SuperstructureSubsystem(
           intakeSubsystem,
           intakeRollersSubsystem,
           queuerSubsystem,
           shooterSubsystem,
           swerveSubsystem);
-
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  public final AutonomousChooser autonomousChooser = new AutonomousChooser(this);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -124,19 +122,19 @@ public class RobotContainer {
     // driver controls
     this.driverController.startButton.whenPressed(() -> this.imuSubsystem.zero());
     driverController.leftTrigger.whileActiveContinuous(
-        new IntakeSubsystemCommand(superStructure, RobotIntakeMode.INTAKING));
+        new IntakeSubsystemCommand(superstructure, RobotIntakeMode.INTAKING));
     driverController.leftBumper.whileActiveContinuous(
-        new IntakeSubsystemCommand(superStructure, RobotIntakeMode.OUTTAKING));
+        new IntakeSubsystemCommand(superstructure, RobotIntakeMode.OUTTAKING));
     driverController.rightTrigger.whileActiveContinuous(
-        new AutoShooterCommand(superStructure).alongWith(new AutoAimAndShoot(swerveSubsystem)));
+        new AutoAimAndShoot(superstructure, driverController));
     // operator controls
     operatorController.backButton.whenPressed(
-        new HomeIntakeCommand(this.intakeSubsystem, superStructure));
+        new HomeIntakeCommand(this.intakeSubsystem, superstructure));
     operatorController.leftTrigger.whileActiveContinuous(
-        () -> this.superStructure.setIntakePosition(IntakeSetting.INTAKING));
+        () -> this.superstructure.setIntakePosition(IntakeSetting.INTAKING));
     operatorController.leftBumper.whileActiveContinuous(
-        () -> this.superStructure.setIntakePosition(IntakeSetting.UP));
-    operatorController.rightTrigger.whileActiveContinuous(new ManualShooterCommand(superStructure));
+        () -> this.superstructure.setIntakePosition(IntakeSetting.UP));
+    operatorController.rightTrigger.whileActiveContinuous(new ManualShooterCommand(superstructure));
   }
 
   /**
@@ -145,7 +143,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return autonomousChooser.getAutonomousCommand();
   }
 }
