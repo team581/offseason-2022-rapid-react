@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autonomous.AutonomousChooser;
 import frc.robot.controller.ButtonController;
 import frc.robot.controller.DriveController;
@@ -109,7 +108,10 @@ public class RobotContainer {
 
     this.swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(this.swerveSubsystem, this.driverController));
-
+    this.elevatorSubsystem.setDefaultCommand(
+        new ElevatorSetPercent(this.elevatorSubsystem, 0)
+            .perpetually()
+            .withName("PerpetualElevatorSetPercent"));
     // TODO: Try doing sequentual(ShooterCommand, parallel(QueuerCommand.perpetually(),
     // ShooterCommand.perpetually()))
     // this.shooterSubsystem.setDefaultCommand(
@@ -132,13 +134,7 @@ public class RobotContainer {
         .rightBumper
         .whenPressed(new ElevatorGoToPosition(elevatorSubsystem, ElevatorSetting.DEPLOYED))
         .whenReleased(new ElevatorGoToPosition(elevatorSubsystem, ElevatorSetting.LATCHED));
-    new Trigger(() -> operatorController.getRightY() > 0.5)
-        .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.5));
-    new Trigger(() -> operatorController.getRightY() < -0.5)
-        .whenActive(new ElevatorSetPercent(elevatorSubsystem, -0.5));
-    new Trigger(
-            () -> operatorController.getRightY() < 0.15 && operatorController.getRightY() > -0.15)
-        .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0));
+
     this.driverController.startButton.whenPressed(() -> this.imuSubsystem.zero());
     driverController.leftTrigger.whileActiveContinuous(
         new IntakeSubsystemCommand(superstructure, RobotIntakeMode.INTAKING));
@@ -146,7 +142,12 @@ public class RobotContainer {
         new IntakeSubsystemCommand(superstructure, RobotIntakeMode.OUTTAKING));
     driverController.rightTrigger.whileActiveContinuous(
         new AutoAimAndShoot(superstructure, driverController));
+
     // operator controls
+    // new Trigger(() -> operatorController.getRightY() > 0.5)
+    //     .whileActiveContinuous(new ElevatorSetPercent(elevatorSubsystem, 0.15));
+    // new Trigger(() -> operatorController.getRightY() < -0.5)
+    //     .whileActiveContinuous(new ElevatorSetPercent(elevatorSubsystem, -0.15));
     operatorController.startButton.whenPressed(new HomeElevatorCommand(elevatorSubsystem));
     operatorController.backButton.whenPressed(
         new HomeIntakeCommand(this.intakeSubsystem, superstructure));

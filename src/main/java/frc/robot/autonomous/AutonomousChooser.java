@@ -29,6 +29,7 @@ public class AutonomousChooser {
     autonomousModeChooser.addOption("blue right two ball", AutonomousSettings.BLUE_RIGHT_TWO_BALL);
     autonomousModeChooser.addOption("center two ball", AutonomousSettings.CENTER_TWO_BALL);
     SmartDashboard.putData("Auto", autonomousModeChooser);
+    // SmartDashboard.putData("Auto goal pose", );
   }
 
   public Command getAutonomousCommand() {

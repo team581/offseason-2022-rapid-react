@@ -2,10 +2,20 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/ElevatorSubsystem": "Subsystem",
       "/LiveWindow/ExampleSubsystem": "Subsystem",
       "/LiveWindow/ImuSubsystem": "Subsystem",
+      "/LiveWindow/IntakeRollersSubsystem": "Subsystem",
+      "/LiveWindow/IntakeSubsystem": "Subsystem",
+      "/LiveWindow/Localization": "Subsystem",
+      "/LiveWindow/QueuerSubsystem": "Subsystem",
+      "/LiveWindow/ShooterSubsystem": "Subsystem",
+      "/LiveWindow/SuperstructureSubsystem": "Subsystem",
       "/LiveWindow/SwerveSubsystem": "Subsystem",
-      "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/Auto": "String Chooser"
     },
     "windows": {
       "/LiveWindow/Ungrouped/Scheduler": {
@@ -19,7 +29,7 @@
     "Plot <0>": {
       "plots": [
         {
-          "height": 338
+          "height": 332
         }
       ]
     }

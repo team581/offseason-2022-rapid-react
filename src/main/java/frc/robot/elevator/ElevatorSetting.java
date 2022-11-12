@@ -6,8 +6,8 @@ package frc.robot.elevator;
 
 public enum ElevatorSetting {
   STOWED(0),
-  DEPLOYED(20),
-  LATCHED(10);
+  DEPLOYED(5),
+  LATCHED(2);
 
   public final double height;
 
