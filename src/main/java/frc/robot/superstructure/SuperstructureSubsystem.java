@@ -47,7 +47,7 @@ public class SuperstructureSubsystem extends SubsystemBase {
   public void periodic() {
     // shooter logic
     if (shooterMode == RobotShooterMode.MANUAL_WARMUP) {
-      this.savedRPM = 2300;
+      this.savedRPM = 2650;
     } else if (shooterMode == RobotShooterMode.AUTO_SHOOT) {
       this.savedRPM = ShooterSubsystem.getRPMForAutoShoot();
     } else {
