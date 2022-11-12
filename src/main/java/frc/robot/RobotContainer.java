@@ -136,7 +136,8 @@ public class RobotContainer {
         .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0.5));
     new Trigger(() -> operatorController.getRightY() < -0.5)
         .whenActive(new ElevatorSetPercent(elevatorSubsystem, -0.5));
-    new Trigger(() -> operatorController.getRightY() < 0.15 && operatorController.getRightY() > -0.15)
+    new Trigger(
+            () -> operatorController.getRightY() < 0.15 && operatorController.getRightY() > -0.15)
         .whenActive(new ElevatorSetPercent(elevatorSubsystem, 0));
     this.driverController.startButton.whenPressed(() -> this.imuSubsystem.zero());
     driverController.leftTrigger.whileActiveContinuous(
