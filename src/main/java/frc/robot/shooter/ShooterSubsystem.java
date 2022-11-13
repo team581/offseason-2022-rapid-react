@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
-  private static final double TOLERANCE = 50;
+  private static final double TOLERANCE = 25;
   private static final NetworkTable table =
       NetworkTableInstance.getDefault().getTable("limelight-upper");
   private static final NetworkTableEntry tyEntry = table.getEntry("ty");
