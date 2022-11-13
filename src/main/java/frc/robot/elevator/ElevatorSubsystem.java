@@ -22,7 +22,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem(TalonFX motor) {
     this.motor = motor;
     motor.config_kF(0, 0);
-    motor.config_kP(0, 0.5);
+    motor.config_kP(0, 0.75);
     motor.config_kI(0, 0);
     motor.config_kD(0, 0);
     motor.setInverted(true);
