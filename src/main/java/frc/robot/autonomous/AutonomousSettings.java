@@ -10,7 +10,8 @@ public enum AutonomousSettings {
   DO_NOTHING(0),
   BLUE_LEFT_TWO_BALL(328),
   BLUE_RIGHT_TWO_BALL(80),
-  CENTER_TWO_BALL(0);
+  CENTER_TWO_BALL(0),
+  BLUE_LEFT_THREE_BALL(328);
   public final Rotation2d zeroAngle;
 
   private AutonomousSettings(double zeroAngle) {

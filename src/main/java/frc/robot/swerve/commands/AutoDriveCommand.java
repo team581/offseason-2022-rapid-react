@@ -4,6 +4,7 @@
 
 package frc.robot.swerve.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.swerve.SwerveSubsystem;
@@ -11,27 +12,29 @@ import frc.robot.swerve.SwerveSubsystem;
 public class AutoDriveCommand extends CommandBase {
   private final double sidewaysPercentage;
   private final double forwardPercentage;
-  private final double thetaPercentage;
+  private final double theta;
   private final SwerveSubsystem swerveSubsystem;
   private final boolean fieldRelative;
   private final double duration;
   private final Timer timer = new Timer();
+  private final PIDController thetaController = new PIDController(0.01, 0, 0.001);
 
   /** Creates a new AutoDriveCommand. */
   public AutoDriveCommand(
       SwerveSubsystem swerveSubsystem,
       double sidewaysPercentage,
       double forwardPercentage,
-      double thetaPercentage,
+      double theta,
       boolean fieldRelative,
       double duration) {
     this.swerveSubsystem = swerveSubsystem;
     this.sidewaysPercentage = sidewaysPercentage;
     this.forwardPercentage = forwardPercentage;
-    this.thetaPercentage = thetaPercentage;
+    this.theta = theta;
     this.fieldRelative = fieldRelative;
     this.duration = duration;
     addRequirements(swerveSubsystem);
+    thetaController.enableContinuousInput(-180, 180);
   }
 
   // Called when the command is initially scheduled.
@@ -44,6 +47,8 @@ public class AutoDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double thetaError = swerveSubsystem.getAngle() - theta;
+    double thetaPercentage = -thetaController.calculate(thetaError, 0);
     swerveSubsystem.driveTeleop(
         sidewaysPercentage, forwardPercentage, thetaPercentage, fieldRelative);
   }
