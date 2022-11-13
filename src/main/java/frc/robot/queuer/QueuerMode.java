@@ -8,7 +8,7 @@ public enum QueuerMode {
   STOPPED(0),
   INTAKING(0.10),
   OUTTAKING(-0.5),
-  SHOOT(0.75);
+  SHOOT(0.25);
 
   public final double percentage;
 
